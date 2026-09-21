@@ -1,0 +1,20 @@
+version: "3.9"
+
+# Local dev convenience only — production DB is Neon.tech (see .env.example).
+# Point DATABASE_URL at this container if you want a fully local Postgres
+# instead of Neon during development.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: innovateprocure
+      POSTGRES_PASSWORD: innovateprocure
+      POSTGRES_DB: innovateprocure
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

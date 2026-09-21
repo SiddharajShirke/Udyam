@@ -1,0 +1,588 @@
+openapi: 3.0.3
+info:
+  title: InnovateProcure API
+  version: 0.1.0
+  description: >
+    Source-of-truth contract for apps/api. Every endpoint the platform needs
+    is listed here as a stub. Update this file BEFORE implementing a shape
+    change — see the verify-api-contract skill.
+servers:
+  - url: http://localhost:4000
+    description: Local dev
+
+tags:
+  - name: auth
+  - name: registrations
+  - name: problems
+  - name: sandboxes
+  - name: evaluations
+  - name: contracts
+  - name: startups
+  - name: ministries
+  - name: audit
+
+paths:
+  /health:
+    get:
+      tags: [auth]
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Log in with email/password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  user: { $ref: "#/components/schemas/User" }
+
+  /auth/me:
+    get:
+      tags: [auth]
+      summary: Get current session user
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /registrations:
+    post:
+      tags: [registrations]
+      summary: Submit a registration request (ministry or startup)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationRequestInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationRequest"
+    get:
+      tags: [registrations]
+      summary: List registration requests (admin)
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: List of registration requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegistrationRequest"
+
+  /registrations/{id}/review:
+    post:
+      tags: [registrations]
+      summary: Approve or reject a registration request (admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { $ref: "#/components/schemas/RegistrationStatus" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationRequest"
+
+  /problems:
+    get:
+      tags: [problems]
+      summary: List problem statements
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: List of problems
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Problem"
+    post:
+      tags: [problems]
+      summary: Create a problem statement (ministry)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProblemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /problems/{id}:
+    get:
+      tags: [problems]
+      summary: Get a problem statement
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Problem
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /problems/{id}/format:
+    post:
+      tags: [problems]
+      summary: Run the AI problem-formatter agent on a raw problem
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Formatted problem statement
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /sandboxes:
+    post:
+      tags: [sandboxes]
+      summary: Open a sandbox for a problem
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SandboxInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sandbox"
+    get:
+      tags: [sandboxes]
+      summary: List sandboxes
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: List of sandboxes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Sandbox"
+
+  /sandboxes/{id}:
+    get:
+      tags: [sandboxes]
+      summary: Get a sandbox
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Sandbox
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sandbox"
+
+  /sandboxes/{id}/results:
+    post:
+      tags: [sandboxes]
+      summary: Submit a sandbox result (startup)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SandboxResultInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SandboxResult"
+    get:
+      tags: [sandboxes]
+      summary: List results for a sandbox
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: List of sandbox results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SandboxResult"
+
+  /evaluations/{sandboxId}:
+    get:
+      tags: [evaluations]
+      summary: Get the AI evaluation report + evaluator verdict for a sandbox
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: sandboxId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Evaluation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Evaluation"
+    post:
+      tags: [evaluations]
+      summary: Record an evaluator's verdict for a sandbox
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: sandboxId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                evaluator_verdict: { type: string }
+      responses:
+        "200":
+          description: Updated evaluation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Evaluation"
+
+  /contracts:
+    post:
+      tags: [contracts]
+      summary: Draft a contract for a sandbox winner
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+
+  /contracts/{id}:
+    get:
+      tags: [contracts]
+      summary: Get a contract
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+
+  /startups:
+    get:
+      tags: [startups]
+      summary: List startups
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: List of startups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Startup"
+
+  /startups/{id}:
+    get:
+      tags: [startups]
+      summary: Get a startup profile
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Startup
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Startup"
+
+  /ministries:
+    get:
+      tags: [ministries]
+      summary: List ministries
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: List of ministries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ministry"
+
+  /audit-logs:
+    get:
+      tags: [audit]
+      summary: List audit log entries (admin)
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: List of audit log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditLog"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  schemas:
+    RegistrationStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+
+    Role:
+      type: string
+      enum: [ADMIN, MINISTRY, EVALUATOR, STARTUP]
+
+    User:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        name: { type: string }
+        role: { $ref: "#/components/schemas/Role" }
+        ministry_id: { type: string, nullable: true }
+        startup_id: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    RegistrationRequestInput:
+      type: object
+      required: [applicant_type, applicant_data]
+      properties:
+        applicant_type: { type: string, example: startup }
+        applicant_data: { type: object }
+
+    RegistrationRequest:
+      allOf:
+        - $ref: "#/components/schemas/RegistrationRequestInput"
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            status: { $ref: "#/components/schemas/RegistrationStatus" }
+            reviewed_by: { type: string, nullable: true }
+            reviewed_at: { type: string, format: date-time, nullable: true }
+            created_at: { type: string, format: date-time }
+
+    Ministry:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        type: { type: string }
+        created_at: { type: string, format: date-time }
+
+    Startup:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        dpiit_number: { type: string, nullable: true }
+        gst_number: { type: string, nullable: true }
+        domain_tags: { type: array, items: { type: string } }
+        trust_score: { type: integer }
+        poc_url: { type: string, nullable: true }
+        dpiit_cert_url: { type: string, nullable: true }
+        stage: { type: string }
+        verification_status: { $ref: "#/components/schemas/RegistrationStatus" }
+        created_at: { type: string, format: date-time }
+
+    ProblemInput:
+      type: object
+      required: [title, raw_input]
+      properties:
+        title: { type: string }
+        raw_input: { type: string }
+        domain_tags: { type: array, items: { type: string } }
+        budget_max: { type: integer, nullable: true }
+        timeline_days: { type: integer, nullable: true }
+
+    Problem:
+      allOf:
+        - $ref: "#/components/schemas/ProblemInput"
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            ministry_id: { type: string, format: uuid }
+            created_by: { type: string, format: uuid }
+            formatted_ps: { type: object, nullable: true }
+            status: { type: string, example: DRAFT }
+            created_at: { type: string, format: date-time }
+
+    SandboxInput:
+      type: object
+      required: [problem_id]
+      properties:
+        problem_id: { type: string, format: uuid }
+        mode: { type: string, default: auto }
+        kpis: { type: object, nullable: true }
+        time_box_days: { type: integer, default: 30 }
+
+    Sandbox:
+      allOf:
+        - $ref: "#/components/schemas/SandboxInput"
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            created_by: { type: string, format: uuid }
+            status: { type: string, example: OPEN }
+            deadline: { type: string, format: date-time, nullable: true }
+            created_at: { type: string, format: date-time }
+
+    SandboxResultInput:
+      type: object
+      required: [startup_id]
+      properties:
+        startup_id: { type: string, format: uuid }
+
+    SandboxResult:
+      allOf:
+        - $ref: "#/components/schemas/SandboxResultInput"
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            sandbox_id: { type: string, format: uuid }
+            token: { type: string, nullable: true }
+            scores: { type: object, nullable: true }
+            total_score: { type: number, nullable: true }
+            status: { type: string, example: INVITED }
+            deploy_count: { type: integer }
+
+    Evaluation:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        sandbox_id: { type: string, format: uuid }
+        ai_report: { type: object, nullable: true }
+        evaluator_id: { type: string, nullable: true }
+        evaluator_verdict: { type: string, nullable: true }
+        status: { type: string, example: PENDING }
+        created_at: { type: string, format: date-time }
+
+    ContractInput:
+      type: object
+      required: [sandbox_id, problem_id, winner_id, ministry_id]
+      properties:
+        sandbox_id: { type: string, format: uuid }
+        problem_id: { type: string, format: uuid }
+        winner_id: { type: string, format: uuid }
+        ministry_id: { type: string, format: uuid }
+
+    Contract:
+      allOf:
+        - $ref: "#/components/schemas/ContractInput"
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            contract_text: { type: string, nullable: true }
+            ip_clause: { type: string, nullable: true }
+            milestones: { type: object, nullable: true }
+            status: { type: string, example: DRAFT }
+            created_at: { type: string, format: date-time }
+
+    AuditLog:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        user_id: { type: string, nullable: true }
+        action: { type: string }
+        entity_id: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }

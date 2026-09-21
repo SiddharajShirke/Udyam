@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  web-and-api:
+    name: Lint & typecheck (web, api)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint web
+        run: pnpm --filter web lint
+
+      - name: Typecheck web
+        run: pnpm --filter web exec tsc --noEmit
+
+      - name: Lint api
+        run: pnpm --filter api lint
+
+      - name: Typecheck api
+        run: pnpm --filter api exec tsc --noEmit
+
+  ai-engine:
+    name: Compile check (ai-engine)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: apps/ai-engine
+        run: pip install -r requirements.txt
+
+      - name: Compile check
+        working-directory: apps/ai-engine
+        run: python -m py_compile main.py agents/*.py sandbox/*.py

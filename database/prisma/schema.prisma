@@ -1,0 +1,132 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  MINISTRY
+  EVALUATOR
+  STARTUP
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  name         String
+  role         Role
+  ministry_id  String?
+  startup_id   String?
+  created_at   DateTime @default(now())
+}
+
+model Ministry {
+  id         String   @id @default(uuid())
+  name       String
+  type       String
+  created_at DateTime @default(now())
+}
+
+model RegistrationRequest {
+  id              String              @id @default(uuid())
+  applicant_type  String
+  applicant_data  Json
+  status          RegistrationStatus  @default(PENDING)
+  reviewed_by     String?
+  reviewed_at     DateTime?
+  created_at      DateTime            @default(now())
+}
+
+model Startup {
+  id                  String   @id @default(uuid())
+  name                String
+  dpiit_number        String?
+  gst_number          String?
+  domain_tags         String[]
+  trust_score         Int      @default(0)
+  poc_url             String?
+  dpiit_cert_url      String?
+  stage               String   @default("seed")
+  verification_status RegistrationStatus @default(PENDING)
+  created_at          DateTime @default(now())
+}
+
+model Problem {
+  id            String   @id @default(uuid())
+  ministry_id   String
+  created_by    String
+  title         String
+  raw_input     String   @db.Text
+  formatted_ps  Json?
+  domain_tags   String[]
+  budget_max    Int?
+  timeline_days Int?
+  status        String   @default("DRAFT")
+  created_at    DateTime @default(now())
+}
+
+model Sandbox {
+  id            String    @id @default(uuid())
+  problem_id    String
+  created_by    String
+  mode          String    @default("auto")
+  kpis          Json?
+  time_box_days Int       @default(30)
+  status        String    @default("OPEN")
+  deadline      DateTime?
+  created_at    DateTime  @default(now())
+}
+
+model SandboxResult {
+  id           String   @id @default(uuid())
+  sandbox_id   String
+  startup_id   String
+  token        String?  @unique
+  scores       Json?
+  total_score  Float?
+  status       String   @default("INVITED")
+  deploy_count Int      @default(0)
+  @@unique([sandbox_id, startup_id])
+}
+
+model Evaluation {
+  id                String   @id @default(uuid())
+  sandbox_id        String   @unique
+  ai_report         Json?
+  evaluator_id      String?
+  evaluator_verdict String?
+  status            String   @default("PENDING")
+  created_at        DateTime @default(now())
+}
+
+model Contract {
+  id            String   @id @default(uuid())
+  sandbox_id    String   @unique
+  problem_id    String
+  winner_id     String
+  ministry_id   String
+  contract_text String?  @db.Text
+  ip_clause     String?  @db.Text
+  milestones    Json?
+  status        String   @default("DRAFT")
+  created_at    DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  user_id    String?
+  action     String
+  entity_id  String?
+  created_at DateTime @default(now())
+}
