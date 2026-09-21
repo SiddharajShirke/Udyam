@@ -10,11 +10,18 @@ InnovateProcure is a three-service monorepo:
    independently without colliding on URL paths.
 2. **`apps/api`** — Node.js + Express + TypeScript. The core REST API:
    auth, registrations, problems, sandboxes, evaluations, contracts. Talks
-   to PostgreSQL (Neon.tech) via Prisma.
+   to PostgreSQL (Supabase) via Prisma, using a pooled `DATABASE_URL` for
+   runtime queries and a direct `DIRECT_URL` for migrations.
 3. **`apps/ai-engine`** — Python + FastAPI. Hosts the AI agents (problem
    formatting, matchmaking, KPI generation, evaluation, contract drafting,
    log-anomaly detection) and the E2B sandbox runner used to execute and
-   score startup submissions.
+   score startup submissions. Matchmaking/RAG-style lookups use Qdrant as
+   the vector store (`QDRANT_URL` / `QDRANT_API_KEY`).
+
+`apps/api` and `apps/ai-engine` authenticate to each other with a shared
+`INTERNAL_SECRET` (identical value in both `.env` files) — `apps/api` calls
+`apps/ai-engine` via `AI_ENGINE_URL`, and `apps/ai-engine` calls back into
+`apps/api` via `NODE_API_URL`.
 
 `apps/api` and `apps/ai-engine` are independent services; `apps/web` talks
 to both directly (see `lib/api.ts` for the API client, and

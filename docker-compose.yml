@@ -1,8 +1,9 @@
 version: "3.9"
 
-# Local dev convenience only — production DB is Neon.tech (see .env.example).
-# Point DATABASE_URL at this container if you want a fully local Postgres
-# instead of Neon during development.
+# Local dev convenience only — production DB is Supabase PostgreSQL (see
+# apps/api/.env.example and apps/ai-engine/.env.example). Point DATABASE_URL
+# at this container if you want a fully local Postgres instead of Supabase
+# during development.
 services:
   postgres:
     image: postgres:16-alpine

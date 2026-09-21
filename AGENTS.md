@@ -49,10 +49,18 @@ innovateprocure/
 ## Build & Run Commands
 
 - Install: `pnpm install` (root)
-- Run frontend: `cd apps/web && pnpm dev`
-- Run API: `cd apps/api && pnpm dev`
-- Run AI engine: `cd apps/ai-engine && uvicorn main:app --reload`
-- Run migrations: `cd database && npx prisma migrate dev --schema=prisma/schema.prisma`
+- Env files: `apps/api/.env`, `apps/ai-engine/.env`, `apps/web/.env.local`
+  (each copied from its own `.env.example` — see README.md for the full
+  one-time setup). `INTERNAL_SECRET` must be identical in `apps/api/.env`
+  and `apps/ai-engine/.env`.
+- Run frontend: `cd apps/web && pnpm dev` → http://localhost:3000
+- Run API: `cd apps/api && pnpm dev` → http://localhost:5000
+- Run AI engine: `cd apps/ai-engine && uvicorn main:app --reload --port 8000`
+  (activate the venv first: `source .venv/bin/activate` /
+  `.venv\Scripts\Activate.ps1`)
+- Generate Prisma client: `cd apps/api && npx prisma generate --schema=../../database/prisma/schema.prisma`
+- Run migrations: `cd apps/api && npx prisma migrate dev --name init --schema=../../database/prisma/schema.prisma`
+- Database is Supabase PostgreSQL (pooled `DATABASE_URL` + direct `DIRECT_URL`), not Neon.
 
 ## Folder Ownership (do not edit outside your assigned folder without a heads-up)
 
@@ -92,6 +100,66 @@ Every work session ends by appending a new entry here, in this exact format:
 
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
+
+### [2026-09-22] — main — Onboarding overhaul: Supabase + per-app env files + service-to-service auth
+- **What was implemented:** Replaced the single root `.env.example` with
+  three per-app files: `apps/api/.env.example` (`DATABASE_URL` +
+  `DIRECT_URL` for Supabase pooled/direct connections, `JWT_SECRET`,
+  `INTERNAL_SECRET`, `AI_ENGINE_URL`, `CORS_ORIGIN`, `PORT=5000`, plus the
+  existing optional Cloudinary vars), `apps/ai-engine/.env.example`
+  (`ANTHROPIC_API_KEY`, `E2B_API_KEY`, `INTERNAL_SECRET`, `NODE_API_URL`,
+  `DATABASE_URL`, `QDRANT_URL`, `QDRANT_API_KEY`, `PORT=8000`), and
+  `apps/web/.env.example` (`NEXT_PUBLIC_API_URL`, copied to `.env.local`
+  not `.env`). `database/prisma/schema.prisma`'s `datasource` block now
+  has `directUrl = env("DIRECT_URL")` (Supabase pooled-vs-direct pattern —
+  this was already present on disk when this session started). Code
+  changes to match: `apps/api/src/server.ts` default port 4000 → 5000;
+  `apps/web/lib/api.ts` default API URL → `http://localhost:5000`;
+  `apps/web/app/page.tsx` now `redirect("/login")` so `/` shows the login
+  page as the onboarding doc describes; `apps/ai-engine/main.py` now calls
+  `load_dotenv()`; added `qdrant-client==1.11.3` to
+  `apps/ai-engine/requirements.txt` (matchmaking/RAG will need it, and the
+  env contract already expects `QDRANT_URL`/`QDRANT_API_KEY`). Updated
+  `README.md` to the full One-time Setup (10 steps) + Daily Startup (3
+  terminals) + Quick Reference flow from the new onboarding doc, verbatim.
+  Updated `AGENTS.md` Build & Run Commands and `docs/ARCHITECTURE.md` /
+  `docker-compose.yml` comments from Neon → Supabase, and documented the
+  `INTERNAL_SECRET` service-to-service auth pattern between `apps/api` and
+  `apps/ai-engine`.
+- **Files touched:** `apps/api/.env.example` (new), `apps/ai-engine/.env.example`
+  (new), `apps/web/.env.example` (new), root `.env.example` (deleted),
+  `apps/api/src/server.ts`, `apps/web/lib/api.ts`, `apps/web/app/page.tsx`,
+  `apps/ai-engine/main.py`, `apps/ai-engine/requirements.txt`, `README.md`,
+  `AGENTS.md`, `docs/ARCHITECTURE.md`, `docker-compose.yml`. (Real
+  `apps/api/.env`, `apps/ai-engine/.env`, `apps/web/.env.local` were also
+  created locally from the new examples for verification — all
+  gitignored, not committed, and still hold placeholder values pending the
+  user filling in real Supabase/Anthropic/E2B/Qdrant credentials.)
+- **api.yaml changed?** no.
+- **schema.prisma changed?** yes (already applied before this session,
+  verified/kept) — added `directUrl` to the `datasource` block. Additive,
+  no model/field changes.
+- **New feature or continuing planned work:** Continuation of Stage Zero —
+  aligning the scaffold with a concrete onboarding runbook (Supabase +
+  Qdrant + service-to-service auth) supplied after the initial build.
+- **Anything the next session/teammate needs to know:**
+  - `prisma migrate dev --name init` was attempted against the placeholder
+    `DIRECT_URL` and failed with `P1001: Can't reach database server` —
+    exactly as expected with placeholder credentials. This confirms the
+    command/path wiring is correct; it will succeed once a real Supabase
+    project's `DATABASE_URL`/`DIRECT_URL` are filled into `apps/api/.env`.
+    `prisma generate` (no DB connection required) was verified working.
+  - `npx prisma studio` was not run — same reason (no live DB yet).
+  - Verified with placeholder env values: `apps/api` responds `200` on
+    `/health` on port 5000; `apps/ai-engine` responds `200` on `/health` on
+    port 8000 (venv + `pip install -r requirements.txt` including the new
+    `qdrant-client` succeeded); `apps/web` typechecks clean and `/`
+    correctly 307-redirects to `/login` (which 200s).
+  - `INTERNAL_SECRET` must be set to the *same* value in both
+    `apps/api/.env` and `apps/ai-engine/.env` — no code currently enforces
+    or checks this (Stage Zero has no service-to-service auth middleware
+    yet), it's just a shared config contract the two `.env.example` files
+    document for whoever builds that middleware next.
 
 ### [2026-09-22] — main — Stage Zero update: add Antigravity skill mirror (.agents/skills/)
 - **What was implemented:** Applied the updated Stage Zero prompt's only new
