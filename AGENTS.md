@@ -36,6 +36,7 @@ innovateprocure/
 ├── .github/workflows/ci.yml
 ├── .codex/skills/
 ├── .claude/skills/
+├── .agents/skills/
 ├── AGENTS.md
 ├── docker-compose.yml
 ├── .gitignore
@@ -91,6 +92,26 @@ Every work session ends by appending a new entry here, in this exact format:
 
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
+
+### [2026-09-22] — main — Stage Zero update: add Antigravity skill mirror (.agents/skills/)
+- **What was implemented:** Applied the updated Stage Zero prompt's only new
+  requirement: a third skills mirror at `.agents/skills/` (Antigravity's
+  discovery path) alongside the existing `.codex/skills/` and
+  `.claude/skills/`, with byte-identical `update-agents-log/SKILL.md` and
+  `verify-api-contract/SKILL.md` content in all three. Updated the
+  Repository Structure tree in this file to list `.agents/skills/`.
+  Everything else in the updated prompt (repo tree, build order, Prisma
+  schema, docs/api.yaml, CI, README, AGENTS.md sections) was already
+  implemented in the prior Stage Zero session and required no changes.
+- **Files touched:** `.agents/skills/update-agents-log/SKILL.md`,
+  `.agents/skills/verify-api-contract/SKILL.md`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation/completion of
+  Stage Zero per the updated master prompt (Antigravity support added).
+- **Anything the next session/teammate needs to know:** Database migration
+  against a live Neon instance still has not been run — that remains the
+  first task for whoever owns `database/` (see the entry below).
 
 ### [2026-09-22] — main — Stage Zero: monorepo scaffold, all 3 services boot, schema drafted
 - **What was implemented:** Full Stage Zero bootstrap. Root pnpm workspace
