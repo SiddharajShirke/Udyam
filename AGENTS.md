@@ -101,6 +101,49 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-09-22] — main — README rewrite: branch-mapped ownership, multi-provider LLM docs
+- **What was implemented:** Rewrote `README.md` end to end to reflect the
+  repo's actual current state: added an "Architecture at a glance" table
+  (services/ports/what talks to what), a new "Branching workflow" section
+  documenting the six real feature branches
+  (`feature/aniket-nodejs-backend`, `feature/siddharaj-ai-sandbox`,
+  `feature/abhay-ai-support`, `feature/rag-chatbot`,
+  `feature/vaishnavi-frontend-govt`, `feature/simran-frontend-startup`) and
+  how to check one out and keep it current with `main`, and a new
+  "LLM providers" section documenting that `apps/ai-engine` is
+  multi-provider (Anthropic, Groq, NVIDIA NIM, and a generic
+  OpenAI-compatible open-source slot) rather than Anthropic-only. Replaced
+  the placeholder Folder Ownership table (`Teammate B/C/D/E`, and an
+  individual's name on `apps/ai-engine/`) with one mapped to the six real
+  branches instead — no individual names remain in `README.md`.
+  `apps/ai-engine/.env.example` gained `GROQ_API_KEY`,
+  `NVIDIA_NIM_API_KEY`, `NVIDIA_NIM_BASE_URL`,
+  `OPENSOURCE_LLM_BASE_URL`/`OPENSOURCE_LLM_API_KEY`;
+  `apps/ai-engine/requirements.txt` gained `groq==0.11.0` and
+  `openai==1.51.0` (the latter doubles as the OpenAI-compatible client for
+  NVIDIA NIM and any other OpenAI-compatible open-source endpoint).
+- **Files touched:** `README.md`, `apps/ai-engine/.env.example`,
+  `apps/ai-engine/requirements.txt`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Documentation/config
+  alignment — no agent logic was implemented for any of the new
+  providers, only the env-var contract and installed client libraries.
+- **Anything the next session/teammate needs to know:**
+  - Verified after the change: `pip install -r requirements.txt`
+    (including the two new packages) succeeds in the existing venv,
+    `py_compile` on all `apps/ai-engine` files is clean, and the service
+    still boots and responds `200` on `/health`.
+  - No code yet reads `GROQ_API_KEY` / `NVIDIA_NIM_API_KEY` / etc. — these
+    are env-var + dependency plumbing only, matching Stage Zero's
+    "no feature logic" scope. Whoever builds an agent that calls Groq or
+    NVIDIA NIM should read the key/base-URL from these exact env var
+    names rather than inventing new ones.
+  - This commit was pushed to `main` and then fast-forward-merged into all
+    six feature branches (each had no divergent commits yet, so the merge
+    was a clean fast-forward) so every branch starts from the same
+    up-to-date README.
+
 ### [2026-09-22] — main — Onboarding overhaul: Supabase + per-app env files + service-to-service auth
 - **What was implemented:** Replaced the single root `.env.example` with
   three per-app files: `apps/api/.env.example` (`DATABASE_URL` +
