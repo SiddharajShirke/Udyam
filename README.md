@@ -1,4 +1,4 @@
-# InnovateProcure
+# Udyam
 
 A government-startup procurement platform built for SIH 2026, Problem
 Statement 26136. It connects ministries with startups through an AI-assisted
