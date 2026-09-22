@@ -101,6 +101,134 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-09-22] — feature/siddharaj-ai-sandbox — AI pipeline build: 5 agents, LangGraph, E2B + external-URL submission, fan-out, internal auth
+- **What was implemented:** The full AI Agent Lead scope (Master Prompt —
+  AI Agent Lead, Rounds 1 and 2) for `apps/ai-engine`, built as real,
+  working code (not stubs):
+  - **Section 2.1–2.5, five agents**, each calling Claude and validating
+    its own output rather than trusting it blindly: `agents/problem_formatter.py`
+    (JSON-fence stripping + one strict-JSON retry), `agents/kpi_generator.py`
+    (weight-sum-to-1.0 validated in code, one retry with a stricter prompt
+    if it fails), `agents/matchmaking.py` (real Jaccard domain-tag
+    similarity scoring — not a placeholder — used by the fan-out to pick
+    eligible candidates), `agents/evaluation.py` (Section 6.3's structured
+    5-section report — `executive_summary`, `per_kpi_breakdown`,
+    `comparison_table`, `recommendation`, `caveats` — supersedes 2.4's flat
+    shape), `agents/contract_drafter.py` (Claude fills variable content,
+    `templates/contract.jinja2` holds the fixed GFR-style structure).
+  - **Section 2.6, LangGraph orchestration:** `graph.py` — a compiled
+    `StateGraph` wiring `format_problem → generate_kpis → (external
+    sandbox step) → evaluate → draft_contract → END`, exactly matching the
+    prompt's pseudocode, with the sandbox step deliberately outside the
+    graph's automatic edges (Node resumes at `evaluate` once
+    `sandbox_scores` exist).
+  - **Section 2.3 + 6.2, E2B sandbox driver:** `sandbox/e2b_runner.py` —
+    `Sandbox.create(timeout=180)`, provision + start in the background,
+    `try/finally: sandbox.kill()` as the planned-destruction safety net
+    (with the 180s timeout as the second, independent one), and the KPI
+    "team" (`performance_check` / `correctness_check` / `reliability_check`)
+    all hitting the same single exposed endpoint.
+  - **Section 6.1, autonomous fan-out:** `fan_out.py` — `asyncio.gather`
+    over the top-6-by-matchmaking-score eligible startups (documented,
+    deliberate cap — E2B free tier caps concurrent sandboxes at 20
+    platform-wide), each isolated in its own try/except so one failure
+    never blocks the batch, then a single Claude call ranks everyone
+    together with per-startup comparative feedback.
+  - **Section 9, unified external-URL submission path:**
+    `sandbox/submission.py` — `test_submission(submission_type, target,
+    kpis)` is the single entry point for both the E2B path and a live-URL
+    path (Hugging Face Spaces / Render / Vercel / AWS / GCP / Azure /
+    anywhere), returning the identical `{status, scores, error}` shape
+    either way. `validate_external_url` is SSRF-safe: HTTPS-only,
+    hostname blocklist, **and** resolves DNS and checks the actual
+    resolved IP (catches DNS rebinding), with deliberately no allowlist of
+    "approved" platforms. `warm_up` does a 3-attempt/5-10-15s backoff for
+    free-tier cold starts, never counted toward scoring.
+  - **Section 8, shared retry wrapper:** `lib/retry.py`'s
+    `call_with_retry`, used by `lib/claude_client.py` around every Claude
+    call and by `sandbox/e2b_runner.py` around sandbox creation — NOT
+    wrapped around the KPI test calls themselves (retrying a live test
+    would change what's being measured).
+  - **Section 2.7, internal service auth:** `lib/internal_auth.py`'s
+    `require_internal_secret` FastAPI dependency, applied to the whole
+    `/ai/*` router (`routes/ai.py`) via `APIRouter(dependencies=[...])` —
+    every route 401s before any agent logic runs if
+    `X-Internal-Secret` is missing or wrong.
+  - **`docs/api.yaml`** updated *with* the code (per the
+    `verify-api-contract` skill): added the `ai` tag, an
+    `internalSecretAuth` (apiKey header) security scheme, and five new
+    paths — `/ai/format-problem`, `/ai/generate-kpis`, `/ai/evaluate`,
+    `/ai/draft-contract`, `/ai/fanout` — plus their request/response
+    schemas, matching the agents' actual shapes field-for-field. Purely
+    additive; no existing path or schema was touched.
+  - **Tests:** `apps/ai-engine/tests/` (47 tests, all passing) covering
+    everything verifiable without a live `ANTHROPIC_API_KEY`/`E2B_API_KEY`:
+    the retry wrapper, JSON-fence extraction, KPI weight-sum validation,
+    matchmaking scoring, the SSRF validator (DNS resolution mocked so
+    tests are deterministic — public IP, private IP, loopback, DNS
+    rebinding, unresolvable host), `warm_up`'s backoff (mocked via
+    `respx`), the three KPI-team HTTP checks (mocked via `respx`), the
+    LangGraph graph compiling with all four expected nodes, the contract
+    Jinja2 template rendering, and — via FastAPI's `TestClient` — that
+    `/health` is public and all five `/ai/*` routes 401 without the
+    header (safe to test with no real keys, since the 401 fires from the
+    `Depends()` before any route body/agent code runs).
+  - `.github/workflows/ci.yml`'s `ai-engine` job now also runs
+    `pytest tests/ -q` (installing from the new `requirements-dev.txt`),
+    not just `py_compile`.
+- **Files touched:** `apps/ai-engine/{lib/__init__.py, lib/retry.py,
+  lib/json_utils.py, lib/internal_auth.py, lib/claude_client.py,
+  agents/problem_formatter.py, agents/kpi_generator.py,
+  agents/matchmaking.py, agents/evaluation.py, agents/contract_drafter.py,
+  templates/contract.jinja2, sandbox/e2b_runner.py, sandbox/submission.py,
+  graph.py, fan_out.py, routes/__init__.py, routes/ai.py, main.py,
+  requirements.txt, requirements-dev.txt, pytest.ini, tests/*}`,
+  `docs/api.yaml`, `.github/workflows/ci.yml`, `AGENTS.md`.
+- **api.yaml changed?** yes — five new endpoints added (`/ai/format-problem`,
+  `/ai/generate-kpis`, `/ai/evaluate`, `/ai/draft-contract`, `/ai/fanout`),
+  plus a new `ai` tag and `internalSecretAuth` security scheme. Purely
+  additive.
+- **schema.prisma changed?** no — **but there is a flagged dependency**:
+  Section 9.4 needs two additive, nullable fields on `SandboxResult` —
+  `submission_type: String` (`"e2b" | "external_url"`) and
+  `external_url: String?` — which is **Aniket's migration to run on
+  `feature/aniket-nodejs-backend`, not built here**. `sandbox/submission.py`
+  and `fan_out.py` are already written to expect a `submission_type` /
+  `submission_target` shape per startup so no code changes should be
+  needed on this branch once that migration lands — just flag it to
+  Aniket before this branch's work is relied on end-to-end.
+- **New feature or continuing planned work:** New feature — this is the
+  first implementation of the AI pipeline; `apps/ai-engine` previously
+  had only `# TODO` stubs.
+- **Anything the next session/teammate needs to know:**
+  - **No live `ANTHROPIC_API_KEY` or `E2B_API_KEY` was available in this
+    session.** Everything that can be verified without them was: all
+    files `py_compile` clean, the full FastAPI app boots and
+    `/health` responds `200`, all five `/ai/*` routes are registered
+    (confirmed via `/openapi.json`) and correctly 401 without the
+    internal-secret header, the LangGraph graph compiles with all four
+    nodes, and all 47 pytest tests pass. What is **not** yet verified:
+    an actual Claude call returning valid JSON, an actual E2B sandbox
+    being created/killed, and an actual live external-URL submission
+    being warmed up and tested for real. Whoever picks this up next with
+    real keys should run the pipeline against one seeded real problem
+    end-to-end before trusting it for a demo (see Section 7 of the
+    original prompt).
+  - `sandbox/e2b_runner.py`'s `provision_and_start` follows
+    `e2b-code-interpreter`'s documented v1 interface
+    (`Sandbox.create`, `.files.write`, `.commands.run`, `.get_host`) —
+    flagged in that file's own docstring as needing live verification,
+    since it was written without a real E2B account to test against.
+  - `langgraph==1.2.12` and `requirements-dev.txt` (`pytest`,
+    `pytest-asyncio`, `respx`) are new dependencies — installed and
+    verified in the existing `.venv`.
+  - Fan-out cap of 6 is deliberate (documented in `fan_out.py`'s own
+    comment, not just here) — don't "fix" it upward without re-checking
+    the E2B concurrency budget against whatever else is running on the
+    platform at demo time.
+  - This work is on `feature/siddharaj-ai-sandbox` — **not pushed to
+    `main`** yet; per `AGENTS.md`'s own rule this needs a PR + 1 review.
+
 ### [2026-09-22] — main — README rewrite: branch-mapped ownership, multi-provider LLM docs
 - **What was implemented:** Rewrote `README.md` end to end to reflect the
   repo's actual current state: added an "Architecture at a glance" table

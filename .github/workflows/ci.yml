@@ -36,7 +36,7 @@ jobs:
         run: pnpm --filter api exec tsc --noEmit
 
   ai-engine:
-    name: Compile check (ai-engine)
+    name: Compile check + tests (ai-engine)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,8 +47,14 @@ jobs:
 
       - name: Install dependencies
         working-directory: apps/ai-engine
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-dev.txt
 
       - name: Compile check
         working-directory: apps/ai-engine
-        run: python -m py_compile main.py agents/*.py sandbox/*.py
+        run: python -m py_compile main.py graph.py fan_out.py agents/*.py sandbox/*.py lib/*.py routes/*.py
+
+      - name: Run tests
+        working-directory: apps/ai-engine
+        env:
+          INTERNAL_SECRET: ci-test-secret
+        run: python -m pytest tests/ -q

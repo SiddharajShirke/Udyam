@@ -20,6 +20,7 @@ tags:
   - name: startups
   - name: ministries
   - name: audit
+  - name: ai
 
 paths:
   /health:
@@ -410,12 +411,140 @@ paths:
                 items:
                   $ref: "#/components/schemas/AuditLog"
 
+  # ---- apps/ai-engine — internal-only, called by apps/api, not the browser.
+  # Every route requires the shared X-Internal-Secret header (see
+  # internalSecretAuth below and apps/ai-engine/lib/internal_auth.py).
+  /ai/format-problem:
+    post:
+      tags: [ai]
+      summary: Run the Problem Formatter agent on raw ministry input
+      security: [{ internalSecretAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FormatProblemInput"
+      responses:
+        "200":
+          description: Structured problem statement
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormattedProblem"
+        "401":
+          description: Missing or invalid X-Internal-Secret header
+        "422":
+          description: Validation error (e.g. Claude response missing required keys)
+
+  /ai/generate-kpis:
+    post:
+      tags: [ai]
+      summary: Run the KPI Generator agent on a formatted problem statement
+      security: [{ internalSecretAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateKpisInput"
+      responses:
+        "200":
+          description: KPI list — weights sum to 1.0
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Kpi"
+        "401":
+          description: Missing or invalid X-Internal-Secret header
+        "422":
+          description: Validation error (e.g. weights don't sum to 1.0 after retry)
+
+  /ai/evaluate:
+    post:
+      tags: [ai]
+      summary: Run the Evaluation agent over one or more startups' sandbox scores
+      security: [{ internalSecretAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluateInput"
+      responses:
+        "200":
+          description: Structured evaluation report (draft, for human Evaluator review)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationReport"
+        "401":
+          description: Missing or invalid X-Internal-Secret header
+        "422":
+          description: Validation error (e.g. missing report section)
+
+  /ai/draft-contract:
+    post:
+      tags: [ai]
+      summary: Run the Contract Drafter agent for a sandbox's winning startup
+      security: [{ internalSecretAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DraftContractInput"
+      responses:
+        "200":
+          description: Draft contract text, IP clause, and milestones
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractDraft"
+        "401":
+          description: Missing or invalid X-Internal-Secret header
+        "422":
+          description: Validation error (e.g. incomplete evaluation input — never drafts a garbage contract)
+
+  /ai/fanout:
+    post:
+      tags: [ai]
+      summary: Autonomous best-match fan-out — sandbox-test the top eligible startups concurrently and rank them
+      security: [{ internalSecretAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FanOutInput"
+      responses:
+        "200":
+          description: Per-startup results plus a comparative ranking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FanOutResult"
+        "401":
+          description: Missing or invalid X-Internal-Secret header
+        "422":
+          description: Validation error (e.g. empty startups list)
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    internalSecretAuth:
+      type: apiKey
+      in: header
+      name: X-Internal-Secret
+      description: >
+        Shared secret between apps/api and apps/ai-engine (INTERNAL_SECRET
+        in both .env files). Not a user-facing credential — apps/api is the
+        only intended caller of /ai/* routes.
 
   parameters:
     id:
@@ -586,3 +715,137 @@ components:
         action: { type: string }
         entity_id: { type: string, nullable: true }
         created_at: { type: string, format: date-time }
+
+    # ---- apps/ai-engine schemas ----
+
+    FormatProblemInput:
+      type: object
+      required: [raw_input]
+      properties:
+        raw_input: { type: string }
+        department_type: { type: string, default: general }
+
+    FormattedProblem:
+      type: object
+      required: [title, outcome, domain_tags, suggested_kpis, scope]
+      properties:
+        title: { type: string }
+        outcome: { type: string }
+        domain_tags: { type: array, items: { type: string } }
+        suggested_kpis: { type: array, items: { type: string } }
+        scope: { type: string }
+
+    GenerateKpisInput:
+      type: object
+      required: [formatted_ps]
+      properties:
+        formatted_ps: { $ref: "#/components/schemas/FormattedProblem" }
+        domain: { type: string, default: general }
+
+    Kpi:
+      type: object
+      required: [name, metric, threshold, weight]
+      properties:
+        name: { type: string }
+        metric: { type: string }
+        threshold: { type: string }
+        weight:
+          type: number
+          description: Across all KPIs in one response, weights sum to 1.0
+
+    EvaluateInput:
+      type: object
+      required: [sandbox_scores, kpis]
+      properties:
+        sandbox_scores:
+          type: object
+          description: "{ startup_id: { kpi_name: score, ... }, ... }"
+        kpis:
+          type: array
+          items: { $ref: "#/components/schemas/Kpi" }
+
+    EvaluationReport:
+      type: object
+      required:
+        [
+          executive_summary,
+          per_kpi_breakdown,
+          comparison_table,
+          recommendation,
+          caveats,
+        ]
+      properties:
+        executive_summary: { type: string }
+        per_kpi_breakdown: { type: array, items: { type: object } }
+        comparison_table: { type: array, items: { type: object } }
+        recommendation: { type: string }
+        caveats: { type: array, items: { type: string } }
+
+    DraftContractInput:
+      type: object
+      required: [evaluation, winner, problem]
+      properties:
+        evaluation: { $ref: "#/components/schemas/EvaluationReport" }
+        winner: { type: object }
+        problem: { type: object }
+
+    ContractDraft:
+      type: object
+      required: [contract_text, ip_clause, milestones]
+      properties:
+        contract_text: { type: string }
+        ip_clause: { type: string }
+        milestones:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              kpi_threshold: { type: string }
+              amount_lakhs: { type: number }
+
+    FanOutInput:
+      type: object
+      required: [problem_id, formatted_ps, kpis, startups]
+      properties:
+        problem_id: { type: string, format: uuid }
+        formatted_ps: { $ref: "#/components/schemas/FormattedProblem" }
+        kpis:
+          type: array
+          items: { $ref: "#/components/schemas/Kpi" }
+        startups:
+          type: array
+          description: Eligible pool — the fan-out caps at the top 6 by matchmaking score
+          items:
+            type: object
+            required: [id, submission_type, submission_target]
+            properties:
+              id: { type: string, format: uuid }
+              domain_tags: { type: array, items: { type: string } }
+              submission_type: { type: string, enum: [e2b, external_url] }
+              submission_target:
+                type: string
+                description: E2B code reference, or a live HTTPS URL, depending on submission_type
+
+    FanOutResult:
+      type: object
+      required: [candidates_considered, results, ranked, best_startup_id, per_startup_feedback]
+      properties:
+        candidates_considered:
+          type: integer
+          description: Number actually sandbox-tested (capped at 6)
+        results:
+          type: object
+          description: "{ startup_id: { status, scores, error }, ... } — identical shape regardless of submission_type"
+        ranked:
+          type: array
+          items:
+            type: object
+            properties:
+              startup_id: { type: string }
+              total_score: { type: number }
+              rank: { type: integer }
+        best_startup_id: { type: string }
+        per_startup_feedback:
+          type: object
+          description: "{ startup_id: \"comparative reason for this ranking\", ... }"
