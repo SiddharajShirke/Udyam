@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-09-23] — feature/abhay-ai-support — Fix API JWT placeholder lint errors
+- **What was implemented:** Marked the existing unimplemented JWT stub parameters as intentionally unused with `void` expressions so ESLint's `no-unused-vars` rule accepts them. The stubs still throw `Error("Not implemented")`; no signing, verification, authentication, API, or security behavior changed.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing planned work — minimal CI lint unblock.
+- **Anything the next session/teammate needs to know:** This is a temporary lint-only adjustment to Teammate C's JWT placeholders. The actual JWT signing and verification implementation remains outstanding.
+
 ### [2026-09-22] — feature/abhay-ai-support — AI support endpoints, pooled read layer, deterministic agents
 - **What was implemented:** Added authenticated internal `/ai/*` support endpoints for deterministic problem/startup matchmaking, login anomaly detection, stateless role-aware quick assist, and adaptive hardware eligibility questions/scoring. Added a shared fail-closed `verify_internal_secret` FastAPI dependency that checks `X-Internal-Secret`; an async SQLAlchemy read-model gateway with Supabase-friendly pool limits (5 connections + 2 overflow) that only reads Prisma-owned `Problem`, `Startup`, and `AuditLog` tables; a one-retry Claude helper for anomaly explanation/quick assist; and unit coverage for the deterministic agents. The matching algorithm returns only approved startups with actual domain overlap, weighted 70% by overlap and 30% by trust score. No Python migrations or schema writes were added.
 - **Files touched:** `docs/api.yaml`, `apps/ai-engine/main.py`, `apps/ai-engine/requirements.txt`, `apps/ai-engine/dependencies.py`, `apps/ai-engine/database.py`, `apps/ai-engine/routers/__init__.py`, `apps/ai-engine/routers/support.py`, `apps/ai-engine/agents/{claude_helper.py,matchmaking.py,log_anomaly.py,hardware_eligibility.py,quick_assist.py}`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
