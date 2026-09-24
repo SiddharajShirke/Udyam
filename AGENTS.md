@@ -101,6 +101,15 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-09-24] — feature/abhay-ai-support — Fix CI Prisma client generation & add Schemes Matching engine with tests
+- **What was implemented:** Added missing `Generate Prisma client` step to `.github/workflows/ci.yml` before API typechecking to fix the `Module '@prisma/client' has no exported member 'PrismaClient'` CI error. Created `apps/ai-engine/agents/schemes_matching.py` providing deterministic scheme & policy eligibility evaluation with clear explanation of missing requirements (DPIIT, trust score, startup stage, domain tags, GST). Added unit test coverage in `test_support_agents.py` (5 unit tests passing).
+- **Files touched:** `.github/workflows/ci.yml`, `apps/ai-engine/agents/schemes_matching.py`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Path A — continuing planned work (CI unblock + Round 2 Schemes matching engine).
+- **Anything the next session/teammate needs to know:** CI now generates the Prisma client prior to TypeScript checking `apps/api`. All 5 AI engine support unit tests pass (`python -m unittest discover -s tests -v`).
+
+
 ### [2026-09-23] — feature/abhay-ai-support — Fix API JWT placeholder lint errors
 - **What was implemented:** Marked the existing unimplemented JWT stub parameters as intentionally unused with `void` expressions so ESLint's `no-unused-vars` rule accepts them. The stubs still throw `Error("Not implemented")`; no signing, verification, authentication, API, or security behavior changed.
 - **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from agents.hardware_eligibility import calculate_confidence_score, get_next_question
 from agents.log_anomaly import detect_login_anomaly
 from agents.matchmaking import rank_startups
+from agents.schemes_matching import evaluate_scheme_eligibility
 
 
 class SupportAgentTests(unittest.TestCase):
@@ -27,3 +28,14 @@ class SupportAgentTests(unittest.TestCase):
         complete = {"solution_type": "sensor", "power_source": "battery", "deployment_environment": "outdoor", "connectivity": "lorawan", "prototype_stage": "field_tested"}
         self.assertIsNone(get_next_question(complete))
         self.assertTrue(calculate_confidence_score(complete)["passed_layer_1"])
+
+    def test_schemes_matching_explains_missing_requirements(self):
+        startup = {"id": "s1", "dpiit_number": None, "trust_score": 40, "stage": "seed", "domain_tags": ["ai"]}
+        schemes = [
+            {"id": "sch1", "name": "DeepTech Grant", "eligibility_criteria": {"requires_dpiit": True, "min_trust_score": 50}}
+        ]
+        results = evaluate_scheme_eligibility(startup, schemes)
+        self.assertFalse(results[0]["eligible"])
+        self.assertEqual(len(results[0]["missing_requirements"]), 2)
+        self.assertIn("DPIIT recognition number required", results[0]["missing_requirements"])
+
