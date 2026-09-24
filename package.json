@@ -11,8 +11,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "devDependencies": {
-    "@types/node": "^26.6.2"
   }
 }
