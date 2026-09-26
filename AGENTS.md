@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-09-26] — feature/vaishnavi-frontend-govt — Full landing page sections built with in-page anchor navigation
+- **What was implemented:** Created comprehensive landing page sections for all navigation bar items (#about, #recognition, #funding, #schemes, #market-access, #marquee-initiatives, #resources, #network, #help-centre). All desktop and mobile navigation links now smoothly scroll to their corresponding on-page sections with official DPIIT styling and layout without external redirects.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Landing page section architecture and in-page navigation.
+- **Anything the next session/teammate needs to know:** `tsc --noEmit` and `vite build` pass cleanly.
+
 ### [2026-09-26] — feature/vaishnavi-frontend-govt — Landing page navigation redirects updated to official Startup India resources
 - **What was implemented:** Updated header navigation links (About, Recognition, Funding, Schemes and Policies, Market Access, Marquee Initiatives, Resources, Network, Help centre) and footer resource links on `LandingPage.tsx` to redirect to official Startup India (`startupindia.gov.in`) pages without altering the existing UI/UX, typography, or visual layout.
 - **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
