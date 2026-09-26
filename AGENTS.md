@@ -101,12 +101,12 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
-### [2026-09-26] — feature/vaishnavi-frontend-govt — Full landing page sections built with in-page anchor navigation
-- **What was implemented:** Created comprehensive landing page sections for all navigation bar items (#about, #recognition, #funding, #schemes, #market-access, #marquee-initiatives, #resources, #network, #help-centre). All desktop and mobile navigation links now smoothly scroll to their corresponding on-page sections with official DPIIT styling and layout without external redirects.
-- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+### [2026-09-26] — feature/vaishnavi-frontend-govt — In-page landing sections created for all header navigation items
+- **What was implemented:** Replaced external redirects with dedicated in-page sections on `LandingPage.tsx` matching each navigation item: `#about` (Hero/Intro), `#recognition` (DPIIT startup procurement exemptions & zero EMD), `#funding` (PoC grants & sandbox credits), `#schemes` (MII order & GFR 2017 rules), `#market-access` (Single-window discovery & scale), `#initiatives` (Marquee challenges), `#resources` (Technical specs, authoring guide & rubrics), `#network` (Government workspaces), and `#help` (Nodal helpdesk & toll-free support). Added smooth scrolling in `globals.css`.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `apps/web/src/globals.css`, `AGENTS.md`.
 - **api.yaml changed?** no.
 - **schema.prisma changed?** no.
-- **New feature or continuing planned work:** Landing page section architecture and in-page navigation.
+- **New feature or continuing planned work:** Public landing page navigation and comprehensive content sections.
 - **Anything the next session/teammate needs to know:** `tsc --noEmit` and `vite build` pass cleanly.
 
 ### [2026-09-26] — feature/vaishnavi-frontend-govt — Landing page navigation redirects updated to official Startup India resources
