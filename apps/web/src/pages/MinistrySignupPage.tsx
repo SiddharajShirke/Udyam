@@ -1,62 +1,92 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
-  Building2,
-  Mail,
-  Phone,
-  User,
   FileText,
   CheckCircle2,
   ChevronRight,
   ChevronDown,
   Shield,
+  Sparkles,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { AuthLayout } from "../components/auth/AuthLayout";
 import { MINISTRY_OPTIONS } from "../lib/ministryData";
 
 /* ─────────────────────────── types ─────────────────────────────── */
 
-interface FormData {
+interface MinistryRegistrationForm {
+  registerAs: string;
   ministryName: string;
-  department: string;
-  ministryType: string;
   officerName: string;
-  officerDesignation: string;
+  departmentId: string;
   officialEmail: string;
-  contactNumber: string;
-  authorizationLetter: string; // file input — UI only
-  purpose: string;
+  dob: string;
+  qualification: string;
+  password: string;
+  focusMandate: string;
+  attachedFileName: string;
+  agreed: boolean;
 }
 
-/* ─────────────────────────── options ───────────────────────────── */
-
-const MINISTRY_TYPES = [
-  "Central Government Ministry",
-  "State Government Department",
-  "Public Sector Undertaking (PSU)",
-  "Autonomous Government Body",
-  "Defence / Armed Forces",
-  "Other Government Entity",
+const REGISTER_ROLES = [
+  "Ministry / Department Nodal Officer",
+  "State Government Department Nodal Officer",
+  "Public Sector Undertaking (PSU) Procurement Lead",
+  "Autonomous Government Institution",
+  "Defence / Strategic Innovation Officer",
 ];
 
-/* ─────────────────────────── page ──────────────────────────────── */
+const DEMO_DATA: MinistryRegistrationForm = {
+  registerAs: "Ministry / Department Nodal Officer",
+  ministryName: "Ministry of Jal Shakti",
+  officerName: "Dr. Arvind Patel",
+  departmentId: "GOV-MIN-74921",
+  officialEmail: "officer@jalshakti.gov.in",
+  dob: "1984-06-15",
+  qualification: "M.Tech in Water Resources Engineering, IAS Cadre (2009 Batch)",
+  password: "UdyamGov@2026!",
+  focusMandate:
+    "Implementation of telemetry-enabled real-time water quality monitoring for rural pipeline networks under Jal Jeevan Mission, SCADA automation, and IoT sensor benchmarking.",
+  attachedFileName: "dr_arvind_patel_official_id.pdf",
+  agreed: true,
+};
 
 export default function MinistrySignupPage() {
   const [done, setDone] = useState(false);
-  const [form, setForm] = useState<FormData>({
+  const [showPassword, setShowPassword] = useState(false);
+  const [demoBanner, setDemoBanner] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [form, setForm] = useState<MinistryRegistrationForm>({
+    registerAs: "Ministry / Department Nodal Officer",
     ministryName: "",
-    department: "",
-    ministryType: "",
     officerName: "",
-    officerDesignation: "",
+    departmentId: "",
     officialEmail: "",
-    contactNumber: "",
-    authorizationLetter: "",
-    purpose: "",
+    dob: "",
+    qualification: "",
+    password: "",
+    focusMandate: "",
+    attachedFileName: "",
+    agreed: false,
   });
 
-  function set(field: keyof FormData, value: string) {
+  function setField<K extends keyof MinistryRegistrationForm>(field: K, value: MinistryRegistrationForm[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleFillDemoData() {
+    setForm({ ...DEMO_DATA });
+    setDemoBanner(true);
+    setTimeout(() => setDemoBanner(false), 4000);
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setField("attachedFileName", file.name);
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -78,23 +108,26 @@ export default function MinistrySignupPage() {
               REQUEST RECEIVED
             </p>
             <h2 className="text-xl font-black text-gray-900 mb-2">
-              Ministry Account Request Submitted!
+              Ministry Registration Submitted!
             </h2>
             <p className="text-sm text-gray-500 mb-2">
-              Your request has been forwarded to the Admin team for verification. An account will
-              be provisioned at:
+              Your registration application for{" "}
+              <span className="font-semibold text-gray-800">{form.ministryName || "Ministry Account"}</span>{" "}
+              has been forwarded to the Udyam admin team for verification.
             </p>
             <p className="font-semibold text-gray-800 mb-6">{form.officialEmail}</p>
             <p className="text-xs text-gray-400 mb-6">
-              Expected processing time: 3–5 working days. You will receive an official onboarding
-              email once the account is approved.
+              Expected processing time: 24–48 working hours. You will receive an official onboarding
+              email once your government credentials are confirmed.
             </p>
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-orange hover:bg-brand-orange-dark text-white text-sm font-bold rounded-sm transition-colors"
-            >
-              Back to Sign In
-            </Link>
+            <div className="space-y-2.5">
+              <Link
+                to="/login"
+                className="w-full flex items-center justify-center gap-2 px-6 py-2.5 bg-brand-orange hover:bg-brand-orange-dark text-white text-sm font-bold rounded-sm transition-colors shadow-sm"
+              >
+                Back to Sign In
+              </Link>
+            </div>
           </div>
         </div>
       </AuthLayout>
@@ -108,69 +141,93 @@ export default function MinistrySignupPage() {
           <div className="h-1 bg-brand-orange w-full" />
 
           <div className="px-8 pt-7 pb-8">
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-9 w-9 rounded-full bg-brand-orange-surface flex items-center justify-center flex-shrink-0">
-                <Building2 className="h-4.5 w-4.5 text-brand-orange" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-brand-orange uppercase tracking-widest">
-                  DPIIT INNOVATION PORTAL
-                </p>
-                <h1 className="text-xl font-black text-gray-900 leading-tight">
-                  Ministry Account Request
-                </h1>
-              </div>
-            </div>
-
-            <p className="text-xs text-gray-400 mb-6 pl-12">
-              Ministry accounts are provisioned by the Admin team. Submit your details and an
-              authorisation letter to request access.
-            </p>
-
-            {/* Info notice */}
-            <div className="flex items-start gap-2.5 bg-brand-orange-tint border border-brand-orange/20 rounded-sm px-4 py-3 mb-6">
-              <Shield className="h-4 w-4 text-brand-orange flex-shrink-0 mt-0.5" aria-hidden="true" />
-              <p className="text-[11px] text-brand-orange-dark leading-relaxed">
-                Only authorised officers from registered government bodies may request a Ministry
-                account. Requests are verified against official government records.
+            {/* Header Title & Subtitle */}
+            <div className="mb-4">
+              <h1 className="text-3xl font-black text-gray-900 leading-tight">Join the network</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Tell us about your ministry or department to get started.
               </p>
             </div>
 
+            {/* Log in / Register Tab Switcher */}
+            <div className="flex border-b border-gray-200 mb-6">
+              <Link
+                to="/login"
+                className="pb-2.5 px-4 text-base font-semibold text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                Log in
+              </Link>
+              <div className="pb-2.5 px-4 text-base font-bold text-brand-orange border-b-2 border-brand-orange">
+                Register
+              </div>
+            </div>
+
+            {/* Auto-fill Button */}
+            <div className="mb-6">
+              <button
+                type="button"
+                onClick={handleFillDemoData}
+                className="w-full py-2.5 px-4 bg-orange-50/70 hover:bg-orange-100/80 border border-brand-orange/40 text-brand-orange font-bold text-sm rounded-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+              >
+                <Sparkles className="h-4 w-4 text-brand-orange" />
+                Fill in Demo Data
+              </button>
+              {demoBanner && (
+                <div className="mt-2 text-center text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-sm py-1.5 px-3 flex items-center justify-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                  Sample Ministry registration data populated successfully!
+                </div>
+              )}
+            </div>
+
+            {/* Registration Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Ministry info */}
+              {/* Register as dropdown */}
               <div className="space-y-1.5">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-gray-100 pb-1.5">
-                  Ministry / Organisation Details
-                </p>
+                <label htmlFor="registerAs" className="block text-sm font-semibold text-gray-800">
+                  Register as <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    id="registerAs"
+                    value={form.registerAs}
+                    onChange={(e) => setField("registerAs", e.target.value)}
+                    required
+                    className="w-full px-3.5 py-3 pr-10 text-base border border-gray-300 rounded-sm bg-white text-gray-900 appearance-none focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
+                  >
+                    {REGISTER_ROLES.map((role) => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                </div>
               </div>
 
-              {/* Select Ministry card matching reference */}
-              <div className="p-4 border border-dashed border-brand-orange/50 bg-brand-orange-surface/30 rounded-sm space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="ministryName" className="block text-sm font-bold text-gray-900">
-                    Select Ministry
-                  </label>
-                  <span className="text-xs font-semibold text-brand-orange bg-brand-orange-tint px-2 py-0.5 rounded border border-brand-orange/20">
-                    Required
-                  </span>
-                </div>
+              {/* Explanatory banner */}
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded-sm text-xs text-gray-700 leading-relaxed flex items-start gap-2">
+                <span className="text-base leading-none">🏛️</span>
+                <span>
+                  <strong>Registering a Ministry Officer Account</strong> to post problem statements &amp; evaluate sandbox submissions.
+                </span>
+              </div>
+
+              {/* Ministry / Department selection */}
+              <div className="space-y-1.5">
+                <label htmlFor="ministryName" className="block text-sm font-semibold text-gray-800">
+                  Ministry / Department <span className="text-red-500">*</span>
+                </label>
                 <div className="relative">
-                  <Building2
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
-                    aria-hidden="true"
-                  />
                   <select
                     id="ministryName"
                     value={form.ministryName}
-                    onChange={(e) => set("ministryName", e.target.value)}
+                    onChange={(e) => setField("ministryName", e.target.value)}
                     required
-                    className="w-full pl-11 pr-10 py-3 text-base bg-white border border-gray-300 rounded-sm text-gray-900 appearance-none
-                      focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange
-                      transition-colors shadow-sm"
+                    className="w-full px-3.5 py-3 pr-10 text-base border border-gray-300 rounded-sm bg-white text-gray-900 appearance-none focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
                   >
                     <option value="" disabled>
-                      Select your Ministry
+                      Select your ministry or department
                     </option>
                     {MINISTRY_OPTIONS.map((m) => (
                       <option key={m} value={m}>
@@ -178,204 +235,201 @@ export default function MinistrySignupPage() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
-                    aria-hidden="true"
+                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* 2-column: Officer Name & Government Department ID */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label htmlFor="officerName" className="block text-sm font-semibold text-gray-800">
+                    Officer / Entity name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="officerName"
+                    type="text"
+                    value={form.officerName}
+                    onChange={(e) => setField("officerName", e.target.value)}
+                    placeholder="Official Full Name"
+                    required
+                    className="w-full px-3.5 py-3 text-base border border-gray-300 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
                   />
                 </div>
-                <p className="text-xs text-gray-500 leading-normal">
-                  The selected Ministry determines the Ministry scope of the account.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label htmlFor="ministryType" className="block text-sm font-semibold text-gray-800">
-                    Organisation Type *
+                <div className="space-y-1.5">
+                  <label htmlFor="departmentId" className="block text-sm font-semibold text-gray-800">
+                    Government Department ID <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    id="ministryType"
-                    value={form.ministryType}
-                    onChange={(e) => set("ministryType", e.target.value)}
+                  <input
+                    id="departmentId"
+                    type="text"
+                    value={form.departmentId}
+                    onChange={(e) => setField("departmentId", e.target.value)}
+                    placeholder="GOV-MIN-XXXXX"
                     required
-                    className="w-full px-3.5 py-3 text-base border border-gray-300 rounded-sm bg-white text-gray-900
-                      focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
-                  >
-                    <option value="">Select type</option>
-                    {MINISTRY_TYPES.map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
+                    className="w-full px-3.5 py-3 text-base border border-gray-300 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
+                  />
                 </div>
-                <TextField
-                  id="department"
-                  label="Sub-Department / Wing"
-                  icon={FileText}
-                  value={form.department}
-                  onChange={(v) => set("department", v)}
-                  placeholder="e.g. DPIIT / SFAC"
-                />
               </div>
 
-              {/* Officer info */}
-              <div className="space-y-1.5 pt-2">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-gray-100 pb-1.5">
-                  Authorised Officer Details
-                </p>
+              {/* 2-column: Registered email & Date of birth */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label htmlFor="officialEmail" className="block text-sm font-semibold text-gray-800">
+                    Registered email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="officialEmail"
+                    type="email"
+                    value={form.officialEmail}
+                    onChange={(e) => setField("officialEmail", e.target.value)}
+                    placeholder="officer@gov.in"
+                    required
+                    className="w-full px-3.5 py-3 text-base border border-gray-300 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="dob" className="block text-sm font-semibold text-gray-800">
+                    Date of birth <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="dob"
+                    type="date"
+                    value={form.dob}
+                    onChange={(e) => setField("dob", e.target.value)}
+                    required
+                    className="w-full px-3.5 py-3 text-base border border-gray-300 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
+                  />
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <TextField
-                  id="officerName"
-                  label="Full Name *"
-                  icon={User}
-                  value={form.officerName}
-                  onChange={(v) => set("officerName", v)}
-                  placeholder="Shri Arvind Patel"
+              {/* Education / qualification */}
+              <div className="space-y-1.5">
+                <label htmlFor="qualification" className="block text-sm font-semibold text-gray-800">
+                  Education / qualification <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="qualification"
+                  type="text"
+                  value={form.qualification}
+                  onChange={(e) => setField("qualification", e.target.value)}
+                  placeholder="Highest qualification (e.g. M.Tech, MBA, IAS Cadre)"
                   required
-                />
-                <TextField
-                  id="officerDesignation"
-                  label="Designation *"
-                  icon={FileText}
-                  value={form.officerDesignation}
-                  onChange={(v) => set("officerDesignation", v)}
-                  placeholder="Joint Secretary"
-                  required
+                  className="w-full px-3.5 py-3 text-base border border-gray-300 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
                 />
               </div>
 
-              <TextField
-                id="officialEmail"
-                label="Official Government Email *"
-                icon={Mail}
-                value={form.officialEmail}
-                onChange={(v) => set("officialEmail", v)}
-                placeholder="officer@ministry.gov.in"
-                type="email"
-                required
-              />
-
-              <TextField
-                id="contactNumber"
-                label="Office Contact Number *"
-                icon={Phone}
-                value={form.contactNumber}
-                onChange={(v) => set("contactNumber", v)}
-                placeholder="+91 11 2345 6789"
-                type="tel"
-                required
-              />
-
-              {/* Purpose */}
-              <div className="space-y-1.5 pt-2">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-100 pb-1">
-                  Purpose & Documents
-                </p>
+              {/* Create password */}
+              <div className="space-y-1.5">
+                <label htmlFor="password" className="block text-sm font-semibold text-gray-800">
+                  Create password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) => setField("password", e.target.value)}
+                    placeholder="Minimum 8 characters"
+                    required
+                    className="w-full px-3.5 py-3 pr-11 text-base border border-gray-300 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="purpose" className="block text-sm font-semibold text-gray-800">
-                  Purpose of Access *
+              {/* Department Focus & Mandate */}
+              <div className="space-y-1.5">
+                <label htmlFor="focusMandate" className="block text-sm font-semibold text-gray-800">
+                  Department Focus &amp; Mandate <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  id="purpose"
-                  value={form.purpose}
-                  onChange={(e) => set("purpose", e.target.value)}
+                  id="focusMandate"
                   rows={3}
+                  value={form.focusMandate}
+                  onChange={(e) => setField("focusMandate", e.target.value)}
+                  placeholder="Brief description of your ministry initiatives and procurement focus"
                   required
-                  placeholder="Briefly describe the procurement problems your ministry intends to post on the platform..."
-                  className="w-full px-3.5 py-2.5 text-base border border-gray-300 rounded-sm bg-white text-gray-900 resize-y
-                    placeholder:text-gray-400
-                    focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
+                  className="w-full px-3.5 py-2.5 text-base border border-gray-300 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 resize-y focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
                 />
               </div>
 
-              {/* File upload — UI only */}
-              <div className="space-y-2">
-                <label htmlFor="authLetter" className="block text-sm font-semibold text-gray-800">
-                  Authorisation Letter (PDF) *
-                </label>
-                <div className="flex items-center gap-3 px-3.5 py-3 border border-dashed border-gray-300 rounded-sm bg-gray-50 hover:border-brand-orange transition-colors">
-                  <FileText className="h-5 w-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
-                  <input
-                    id="authLetter"
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className="flex-1 text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3.5 file:border-0 file:rounded-sm file:bg-brand-orange file:text-white file:text-xs file:font-semibold file:cursor-pointer hover:file:bg-brand-orange-dark"
-                  />
+              {/* Government ID Proof */}
+              <div className="p-3.5 border border-dashed border-gray-300 rounded-sm bg-gray-50 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <FileText className="h-6 w-6 text-gray-400 shrink-0" />
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">Government ID Proof</p>
+                    <p className="text-xs text-gray-500">
+                      {form.attachedFileName ? (
+                        <span className="text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                          {form.attachedFileName}
+                        </span>
+                      ) : (
+                        "PDF, JPG or PNG · max 5 MB"
+                      )}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500">
-                  Upload a signed authorisation letter on official letterhead (PDF, max 5MB)
-                </p>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-3.5 py-1.5 bg-white border border-gray-300 hover:border-brand-orange text-brand-orange font-semibold text-xs rounded-sm transition-colors shadow-2xs whitespace-nowrap cursor-pointer"
+                >
+                  {form.attachedFileName ? "Change file >" : "Attach file >"}
+                </button>
               </div>
 
+              {/* Terms Checkbox */}
               <div className="flex items-start gap-2.5 pt-1">
                 <input
                   type="checkbox"
                   id="terms"
+                  checked={form.agreed}
+                  onChange={(e) => setField("agreed", e.target.checked)}
                   required
-                  className="mt-1 h-4 w-4 rounded accent-brand-orange"
+                  className="mt-1 h-4 w-4 rounded accent-brand-orange cursor-pointer"
                 />
                 <label htmlFor="terms" className="text-xs sm:text-sm text-gray-600 leading-relaxed cursor-pointer">
-                  I certify that I am an authorised representative of the above government body and
-                  agree to the{" "}
-                  <a href="#" className="text-brand-orange font-semibold hover:underline">
-                    Terms & Conditions
+                  I certify that I am an authorised representative of the above government body and agree to the{" "}
+                  <a href="#schemes" className="text-brand-orange font-semibold hover:underline">
+                    Terms &amp; Conditions
                   </a>
                   .
                 </label>
               </div>
 
-              {/* Flow description */}
-              <div className="p-3 bg-gray-50 border border-gray-200 rounded-sm text-xs text-gray-600 leading-relaxed">
-                <span className="font-bold text-gray-800">Flow:</span> Select Ministry → enter account details → submit request → Admin approval → Ministry account activated.
-              </div>
-
+              {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 py-3 bg-brand-orange hover:bg-brand-orange-dark text-white text-base font-bold rounded-sm transition-colors shadow-sm"
+                className="w-full flex items-center justify-center gap-2 py-3 bg-brand-orange hover:bg-brand-orange-dark text-white text-base font-bold rounded-sm transition-colors shadow-sm mt-2 cursor-pointer"
               >
-                Submit Ministry Account Request
+                Submit as Ministry for verification
                 <ChevronRight className="h-5 w-5" />
               </button>
             </form>
 
-            <p className="mt-5 text-center text-xs text-gray-500">
-              Already have an account?{" "}
-              <Link to="/login" className="text-brand-orange font-semibold hover:underline">
-                Sign In
-              </Link>
+            {/* Footer Notice */}
+            <p className="mt-4 text-center text-xs text-gray-500">
+              Your application is reviewed by the Udyam admin team.
             </p>
           </div>
         </div>
       </div>
     </AuthLayout>
-  );
-}
-
-/* ─────────────────────────── helper ────────────────────────────── */
-
-function TextField({
-  id, label, icon: Icon, value, onChange, placeholder, type = "text", required,
-}: {
-  id: string; label: string; icon: typeof Mail; value: string;
-  onChange: (v: string) => void; placeholder?: string; type?: string; required?: boolean;
-}) {
-  return (
-    <div className="space-y-2">
-      <label htmlFor={id} className="block text-sm font-semibold text-gray-800">{label}</label>
-      <div className="relative">
-        <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" aria-hidden="true" />
-        <input
-          id={id} type={type} value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder} required={required}
-          className="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-sm bg-white text-gray-900
-            placeholder:text-gray-400
-            focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-colors"
-        />
-      </div>
-    </div>
   );
 }

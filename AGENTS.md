@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-09-26] — feature/vaishnavi-frontend-govt — Ministry registration form updated with official fields and demo data autofill
+- **What was implemented:** Redesigned Ministry onboarding registration (`MinistrySignupPage.tsx` and route `/register`) into an official Government Ministry registration form matching the reference specification. Added tab switcher (Log in / Register), a prominent "Fill in Demo Data" button with instant feedback, fields for officer entity name, Government Department ID, official email, date of birth, education qualifications, password with visibility toggle, department focus & mandate, and a Government ID proof upload attachment box. Updated header Register action on `LandingPage.tsx` to link to `/register`.
+- **Files touched:** `apps/web/src/pages/MinistrySignupPage.tsx`, `apps/web/src/pages/LandingPage.tsx`, `apps/web/src/App.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Ministry registration flow and demo onboarding experience.
+- **Anything the next session/teammate needs to know:** `tsc --noEmit` and `vite build` pass cleanly. `/register` and `/signup/ministry` render the updated registration form.
+
 ### [2026-09-26] — feature/vaishnavi-frontend-govt — In-page landing sections created for all header navigation items
 - **What was implemented:** Replaced external redirects with dedicated in-page sections on `LandingPage.tsx` matching each navigation item: `#about` (Hero/Intro), `#recognition` (DPIIT startup procurement exemptions & zero EMD), `#funding` (PoC grants & sandbox credits), `#schemes` (MII order & GFR 2017 rules), `#market-access` (Single-window discovery & scale), `#initiatives` (Marquee challenges), `#resources` (Technical specs, authoring guide & rubrics), `#network` (Government workspaces), and `#help` (Nodal helpdesk & toll-free support). Added smooth scrolling in `globals.css`.
 - **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `apps/web/src/globals.css`, `AGENTS.md`.
