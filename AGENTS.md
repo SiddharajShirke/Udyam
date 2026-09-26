@@ -101,6 +101,31 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-09-24] — feature/abhay-ai-support — Fix CI Prisma client generation & add Schemes Matching engine with tests
+- **What was implemented:** Added missing `Generate Prisma client` step to `.github/workflows/ci.yml` before API typechecking to fix the `Module '@prisma/client' has no exported member 'PrismaClient'` CI error. Created `apps/ai-engine/agents/schemes_matching.py` providing deterministic scheme & policy eligibility evaluation with clear explanation of missing requirements (DPIIT, trust score, startup stage, domain tags, GST). Added unit test coverage in `test_support_agents.py` (5 unit tests passing).
+- **Files touched:** `.github/workflows/ci.yml`, `apps/ai-engine/agents/schemes_matching.py`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Path A — continuing planned work (CI unblock + Round 2 Schemes matching engine).
+- **Anything the next session/teammate needs to know:** CI now generates the Prisma client prior to TypeScript checking `apps/api`. All 5 AI engine support unit tests pass (`python -m unittest discover -s tests -v`).
+
+
+### [2026-09-23] — feature/abhay-ai-support — Fix API JWT placeholder lint errors
+- **What was implemented:** Marked the existing unimplemented JWT stub parameters as intentionally unused with `void` expressions so ESLint's `no-unused-vars` rule accepts them. The stubs still throw `Error("Not implemented")`; no signing, verification, authentication, API, or security behavior changed.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing planned work — minimal CI lint unblock.
+- **Anything the next session/teammate needs to know:** This is a temporary lint-only adjustment to Teammate C's JWT placeholders. The actual JWT signing and verification implementation remains outstanding.
+
+### [2026-09-22] — feature/abhay-ai-support — AI support endpoints, pooled read layer, deterministic agents
+- **What was implemented:** Added authenticated internal `/ai/*` support endpoints for deterministic problem/startup matchmaking, login anomaly detection, stateless role-aware quick assist, and adaptive hardware eligibility questions/scoring. Added a shared fail-closed `verify_internal_secret` FastAPI dependency that checks `X-Internal-Secret`; an async SQLAlchemy read-model gateway with Supabase-friendly pool limits (5 connections + 2 overflow) that only reads Prisma-owned `Problem`, `Startup`, and `AuditLog` tables; a one-retry Claude helper for anomaly explanation/quick assist; and unit coverage for the deterministic agents. The matching algorithm returns only approved startups with actual domain overlap, weighted 70% by overlap and 30% by trust score. No Python migrations or schema writes were added.
+- **Files touched:** `docs/api.yaml`, `apps/ai-engine/main.py`, `apps/ai-engine/requirements.txt`, `apps/ai-engine/dependencies.py`, `apps/ai-engine/database.py`, `apps/ai-engine/routers/__init__.py`, `apps/ai-engine/routers/support.py`, `apps/ai-engine/agents/{claude_helper.py,matchmaking.py,log_anomaly.py,hardware_eligibility.py,quick_assist.py}`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
+- **api.yaml changed?** yes — additive `/ai/matchmaking`, `/ai/log-anomaly`, `/ai/quick-assist`, `/ai/hardware/next-question`, and `/ai/hardware/score` endpoints plus their schemas and `internalSecret` security scheme.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Path A — starting the previously assigned AI matchmaking/support workstream.
+- **Anything the next session/teammate needs to know:** The requested Schemes & Policy Matching Engine is deliberately not implemented because the current Prisma schema has no `Scheme` model/table or `eligibility_criteria` field; Node must add that schema through a Prisma migration before Python can query it. Deterministic unit tests pass (`python -m unittest discover -s tests -v`). A fresh local `.venv` install encountered a Windows file lock while installing dependencies, so endpoint-level TestClient verification remains to be rerun after the lock is cleared. `INTERNAL_SECRET` must match the Node service's header value exactly; the implementation fails closed when it is absent.
+
 ### [2026-09-22] — main — README rewrite: branch-mapped ownership, multi-provider LLM docs
 - **What was implemented:** Rewrote `README.md` end to end to reflect the
   repo's actual current state: added an "Architecture at a glance" table

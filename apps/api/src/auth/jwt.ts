@@ -1,5 +1,13 @@
 import jwt from "jsonwebtoken";
 
+export function signToken(payload: Record<string, unknown>): string {
+  void payload;
+  throw new Error("Not implemented");
+}
+
+export function verifyToken(token: string): Record<string, unknown> {
+  void token;
+  throw new Error("Not implemented");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export interface JwtPayload {
