@@ -62,6 +62,7 @@ type Startup = {
   email: string;
   password: string;
   dpiit: string;
+  ministry?: string;
   dob: string;
   education: string;
   description: string;
@@ -755,6 +756,7 @@ function RegisterForm({ onRegister }: { onRegister: (startup: Startup) => void }
   const [role, setRole] = useState<"Startup" | "Ministry">("Startup");
   const [name, setName] = useState("");
   const [dpiit, setDpiit] = useState("");
+  const [ministry, setMinistry] = useState("");
   const [email, setEmail] = useState("");
   const [dob, setDob] = useState("");
   const [education, setEducation] = useState("");
@@ -767,6 +769,7 @@ function RegisterForm({ onRegister }: { onRegister: (startup: Startup) => void }
   const handleAutofillDemo = () => {
     setName(role === "Startup" ? "Aarav Sharma" : "Dr. Rajesh Varma");
     setDpiit(role === "Startup" ? "DPIIT-984210" : "GOV-MIN-40291");
+    setMinistry(role === "Startup" ? "" : "Ministry of Agriculture & Farmers Welfare");
     setEmail(role === "Startup" ? "aarav@cleanenergy.in" : "r.varma@agri.gov.in");
     setDob("1995-08-15");
     setEducation(role === "Startup" ? "B.Tech Innovation Science" : "Ph.D Public Policy & Agritech");
@@ -804,6 +807,7 @@ function RegisterForm({ onRegister }: { onRegister: (startup: Startup) => void }
       email,
       password,
       dpiit,
+      ministry: role === "Ministry" ? ministry : "",
       dob,
       education,
       description,
@@ -839,12 +843,45 @@ function RegisterForm({ onRegister }: { onRegister: (startup: Startup) => void }
       </label>
 
       {role === "Ministry" && (
-        <div className="role-info-banner">
-          <Building2 size={15} />
-          <span>
-            Registering a <strong>Ministry Officer Account</strong> to post problem statements & evaluate sandbox submissions.
-          </span>
-        </div>
+        <>
+          <div className="role-info-banner">
+            <Building2 size={15} />
+            <span>
+              Registering a <strong>Ministry Officer Account</strong> to post problem statements & evaluate sandbox submissions.
+            </span>
+          </div>
+          <label className="field">
+            <span>
+              Ministry / Department<b>*</b>
+            </span>
+            <select
+              name="ministry"
+              value={ministry}
+              onChange={(event) => setMinistry(event.target.value)}
+              required
+            >
+              <option value="" disabled>Select your ministry or department</option>
+              <option value="Ministry of Agriculture & Farmers Welfare">Ministry of Agriculture & Farmers Welfare</option>
+              <option value="Department of Agricultural Research and Education">Department of Agricultural Research and Education</option>
+              <option value="Ministry of Food Processing Industries">Ministry of Food Processing Industries</option>
+              <option value="Ministry of Fisheries, Animal Husbandry and Dairying">Ministry of Fisheries, Animal Husbandry and Dairying</option>
+              <option value="Ministry of Jal Shakti">Ministry of Jal Shakti</option>
+              <option value="Department of Drinking Water and Sanitation">Department of Drinking Water and Sanitation</option>
+              <option value="Ministry of Health and Family Welfare">Ministry of Health and Family Welfare</option>
+              <option value="Ministry of Education">Ministry of Education</option>
+              <option value="Ministry of Electronics and Information Technology">Ministry of Electronics and Information Technology</option>
+              <option value="Ministry of New and Renewable Energy">Ministry of New and Renewable Energy</option>
+              <option value="Ministry of Power">Ministry of Power</option>
+              <option value="Ministry of Rural Development">Ministry of Rural Development</option>
+              <option value="Ministry of Environment, Forest and Climate Change">Ministry of Environment, Forest and Climate Change</option>
+              <option value="Ministry of Housing and Urban Affairs">Ministry of Housing and Urban Affairs</option>
+              <option value="Ministry of Road Transport and Highways">Ministry of Road Transport and Highways</option>
+              <option value="Ministry of Textiles">Ministry of Textiles</option>
+              <option value="Ministry of Women and Child Development">Ministry of Women and Child Development</option>
+              <option value="Other Ministry or Department">Other Ministry or Department</option>
+            </select>
+          </label>
+        </>
       )}
 
       <div className="form-grid">
