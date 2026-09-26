@@ -1,7 +1,7 @@
 # Udyam — Government Innovation & Procurement Platform
 
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Plus+Jakarta+Sans&weight=700&size=26&pause=1000&color=EA580C&center=true&vCenter=true&width=650&lines=Udyam+%E2%80%94+Government+Innovation+Procurement+Platform;SIH+2026+%E2%80%A2+Problem+Statement+26136;Ministry+%E2%80%A2+Evaluator+%E2%80%A2+Admin+%E2%80%A2+Startup;AI-Assisted+Procurement+%26+Sandboxed+Evaluation" alt="Udyam Animated Banner" />
+  <img src="https://readme-typing-svg.demolab.com?font=Plus+Jakarta+Sans&weight=700&size=22&pause=1200&color=EA580C&center=true&vCenter=true&width=850&height=50&lines=Udyam+%E2%80%94+Government+Procurement+Platform;SIH+2026+%E2%80%A2+Problem+Statement+26136;Ministry+%E2%80%A2+Evaluator+%E2%80%A2+Admin+%E2%80%A2+Startup;AI-Assisted+Procurement+%26+Sandboxed+Evaluation" alt="Udyam Animated Banner" />
 </p>
 
 <p align="center">
