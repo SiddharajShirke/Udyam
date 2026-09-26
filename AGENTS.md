@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-09-26] — feature/vaishnavi-frontend-govt — Landing page navigation redirects updated to official Startup India resources
+- **What was implemented:** Updated header navigation links (About, Recognition, Funding, Schemes and Policies, Market Access, Marquee Initiatives, Resources, Network, Help centre) and footer resource links on `LandingPage.tsx` to redirect to official Startup India (`startupindia.gov.in`) pages without altering the existing UI/UX, typography, or visual layout.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Landing page navigation refinement.
+- **Anything the next session/teammate needs to know:** `tsc --noEmit` and `vite build` pass cleanly.
+
 ### [2026-09-26] — feature/vaishnavi-frontend-govt — Ministry selection card styled to reference on Login & Signup
 - **What was implemented:** Styled the Ministry selection field on both `LoginPage.tsx` and `MinistrySignupPage.tsx` with a distinct dashed border container, "Select Ministry" label, "Required" badge, "Select your Ministry" placeholder, and descriptive helper text ("The selected Ministry determines the Ministry scope of the account."). Also exported shared `MINISTRY_OPTIONS` from `ministryData.ts` and added the workflow sequence banner to the Ministry request form.
 - **Files touched:** `apps/web/src/lib/ministryData.ts`, `apps/web/src/pages/LoginPage.tsx`, `apps/web/src/pages/MinistrySignupPage.tsx`, `AGENTS.md`.
