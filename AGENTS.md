@@ -99,7 +99,276 @@ Every work session ends by appending a new entry here, in this exact format:
 - **Anything the next session/teammate needs to know:** ...
 
 ---
-(entries begin below this line — do not delete this instruction block, only append above it)
+### [2026-09-26] — feature/simran-frontend-startup — Improve Sandbox, Schemes, and Milestones text readability
+- **What was implemented:** Increased supporting text and control font sizes slightly within the Sandbox, Schemes, and Milestones pages, including the sandbox report and milestone timeline details.
+- **Files touched:** `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly.
+
+---
+### [2026-09-25] — feature/simran-frontend-startup — Fix scope-aware sandbox completion gate
+- **What was implemented:** Fixed the sandbox E2B runner gate so it validates only the technical fields relevant to the selected Software, Hardware, or Both scope. Completed submissions can now enter the loading and streamed report flow without being blocked by hidden fields from another scope.
+- **Files touched:** `apps/web/src/main.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly.
+
+---
+### [2026-09-25] — feature/simran-frontend-startup — Restore full catalogs after search cancellation
+- **What was implemented:** Fixed persistent global search state so normal navigation back to Schemes or Problem Statements restores all items. Added visible Clear search actions on both catalog pages, which immediately return the full unfiltered list.
+- **Files touched:** `apps/web/src/main.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly.
+
+---
+### [2026-09-25] — feature/simran-frontend-startup — Make global search open matching catalog results
+- **What was implemented:** Connected the government header search to the actual catalog pages. Searches matching problem statement IDs, titles, ministries, themes, or descriptions open the filtered Problem Statements page; scheme-related searches open the filtered Schemes page and respect its eligibility tabs.
+- **Files touched:** `apps/web/src/main.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly.
+
+---
+### [2026-09-25] — feature/simran-frontend-startup — Make overview metrics navigable and polish first dashboard screen
+- **What was implemented:** Converted the Overview metric cards into accessible clickable buttons that navigate to Problem Statements, Schemes, and Milestones. Framed the personalized recommendations area as a clear dashboard section and added hover, active, and keyboard focus states to the metric cards.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly.
+
+---
+### [2026-09-25] — feature/simran-frontend-startup — Gate sandbox evaluation on complete submissions and simplify language control
+- **What was implemented:** Prevented the E2B sandbox benchmark runner from starting until all required solution details and both artifact uploads are present; incomplete submissions now show a clear missing-details warning. Replaced the interactive language dropdown with a static English-only header control.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly. Browser smoke test was skipped by the workspace after the code/build validation.
+
+---
+### [2026-09-25] — feature/simran-frontend-startup — Complete workspace page visual system and section panels
+- **What was implemented:** Added the missing visual styles for the Overview, Problem Statements, Solution Sandbox, Milestones, Schemes, Profile, and sandbox report pages, including framed cards, badges, filters, responsive grids, timelines, uploads, loading states, terminal reports, and mobile layouts. Added compact white section panels around key page headers and filters, and changed missing-document scheme attachment controls to white with orange outlines.
+- **Files touched:** `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly. The Vite dev server is available at `http://localhost:5175/` because ports 5173 and 5174 were already occupied.
+
+---
+### [2026-09-25] — feature/simran-frontend-startup — Comprehensive Interactive UI & Modal System Across All Pages
+- **What was implemented:** Added rich interactive controls, popups, and toast feedback across all pages based on Startup India / DPIIT reference standard: (1) Added Notification Bell with unread badge & live activity alert panel in `GovtHeader`; (2) Added Challenge Bookmarking (⭐ star toggle), "Bookmarks Only" filter, Quick View Spec Modal, and Share Link toast copy in `ProblemStatementsView`; (3) Added Timeline Status Filters ("All", "Completed", "In Progress", "Upcoming"), Expandable Day Cards with detailed sub-tasks, and Schedule Day 4 Live Demo Slot Modal in `MilestonesView`; (4) Added One-Click Copy DPIIT Recognition ID, Official Digital DPIIT Startup Passport ID Card Modal, and Verified Document Preview Viewer Modal in `ProfileView`; (5) Preserved full line-by-line streaming E2B report output in `SolutionSandboxView` and MSINS 2025 scheme document triggers in `SchemesView`.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-25] — feature/simran-frontend-startup — Global UI Polish, Animations & Micro-Interactions
+- **What was implemented:** Enhanced UI polish, micro-interactions, and animations across the entire application without changing layout structures or color themes: (1) Added keyframe animations (`@keyframes fadeInUp`, `@keyframes subtleGlow`, `@keyframes badgePulse`, `@keyframes floatPill`); (2) Added view entrance animations for all main views (`DashboardView`, `ProblemStatementsView`, `SolutionSandboxView`, `MilestonesView`, `SchemesView`, `ProfileView`); (3) Enhanced smooth card hover lift and glowing elevation states for problem statement cards, scheme cards, milestone day cards, profile cards, and form sections; (4) Added button active scale states, glowing focus rings for form controls, glowing saffron highlights, and custom government themed scrollbars.
+- **Files touched:** `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-25] — feature/simran-frontend-startup — Modular Individual Section Cards for Profile Page
+- **What was implemented:** Redesigned `ProfileView` so that **EVERY SINGLE CONTENT ITEM** has its own dedicated small white section card box (`.profile-item-card`) featuring an icon badge, upper-case label, status pill, bold contrast value, and saffron left-border accent (`border-left: 4.5px solid #ea580c`) using official Startup India / DPIIT government color palette: (1) Founder / Representative Card, (2) DPIIT Recognition ID Card, (3) Registered Email Card, (4) Date of Birth Card, (5) Educational Qualification Card, (6) Registration Date Card, (7) Entity Classification Card, (8) Primary Innovation Sector Card, (9) Section 80-IAC Tax Exemption Card, (10) BHASKAR Innovation Network Sync Card, (11) Public Procurement EMD Waiver Card, (12) Account Verification Status Card, (13) Password Encryption & 2FA Card, (14) Attached Education Certificate Card, (15) Attached DPIIT Recognition Certificate Card, (16) Full Solution Description & Mandate Card.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-25] — feature/simran-frontend-startup — Full Line-by-Line Content Streaming for E2B Sandbox Evaluation Report
+- **What was implemented:** Updated `SolutionSandboxView` report output page so that after clicking "Check Sandbox Benchmark Result" and completing the 3-second loader screen, **EVERY SINGLE CONTENT ITEM** on the results page streams in line-by-line / block-by-block (simulating ChatGPT streaming text output): (1) Top Report Header Card -> (2) E2B Terminal Box Header -> (3) Terminal Log Lines 1-10 -> (4) Target Ministry Test Case Verification Summary Card Header -> (5) Test Case Cards 1-4 (Accuracy, Latency, Offline Mode, Anomaly Score) -> (6) System Optimization Analysis & Drawback Points Header Card -> (7) Drawback #1 Card (Model Weight Size 45.2 MB) & Recommendation -> (8) Drawback #2 Card (Zero-Lux Ambient Sensitivity) & Recommendation -> (9) Final System Evaluation Verdict Banner ("PASSED WITH HIGHEST RECOMMENDATION - 98% Match") -> (10) Final Action Buttons Row ("Submit Final Proposal to Ministry Board").
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Expand Profile Details & Add 3s E2B Sandbox Loader with Streaming Console Report
+- **What was implemented:** Added requested updates: (1) Overhauled `ProfileView` to display EVERY single detail collected/mentioned during startup registration (Founder Name, DPIIT Recognition ID, Registered Email, DOB, Education, Registration Date, Verification Status, Entity Classification, Sector, Tax Exemption status, Security Encryption status, Attached Education & DPIIT Recognition Certificates, and Full Solution Description); (2) Removed all question numbers ("Q1.", "Q2.", "Q3.", "Q4.", "3.", "4.", "5.") from the Solution Sandbox form headings and field titles; (3) Re-ordered Solution Sandbox sections so Product Code & Artifact File Uploads comes before KPI Verification, making "System KPI & Benchmark Verification" the VERY LAST STEP; (4) Added 3-second loader screen ("Running E2B Sandbox Automated Test Runner...") when checking sandbox benchmark results; (5) Built line-by-line streaming console report output page (simulating ChatGPT streaming text output) featuring execution terminal logs, test case results summary card, identified drawback points & recommendations, and final proposal submission flow.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Add Role Dropdowns, Day-by-Day Milestones Timeline & MSINS 2025 Schemes Page
+- **What was implemented:** Added interactive features: (1) Added "Login as" role dropdown select field to `LoginForm` with options (`Startup / Entrepreneur`, `Ministry / Department Officer`, `Technical Evaluator / Expert`); (2) Added "Register as" role dropdown select field to `RegisterForm` with options (`Startup / Entrepreneur`, `Ministry / Department Nodal Officer`); (3) Overhauled `MilestonesView` to feature real application evaluation tracking (`PS-2026-AGRI-01`), 60% progress bar, day-by-day lifecycle timeline (Day 1: Submission [Completed], Day 2: E2B Sandbox Test [Completed], Day 3: Ministry Review [In Progress], Day 4: Demo [Upcoming], Day 5: Contract Award [Upcoming]), and live evaluation audit logs; (4) Built `SchemesView` based on the Maharashtra Startup, Entrepreneurship & Innovation Policy 2025 (MSINS) with scheme categories, document eligibility checklists, missing document attachment triggers unlocking schemes, and "Apply for Scheme" action flow updating state to "✓ Applied".
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI & workflow features.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Separate Sandbox Questions into Individual Card Sections
+- **What was implemented:** Separated every question in the Solution Sandbox form into its own individual white card container (`.form-section`) with a prominent icon, bold section header title, clear question number, and generous spacing: (1) Initial Scope Classification card; (2) Solution Title card; (3) Q1 Solution Type card; (4) Q2 Primary Outcome card; (5) Expected Outcome Explanation card; (6) Existing Process Improvement card; (7) Q3 Expected Improvement Percentage card; (8) Target KPI Value & Direction card; (9) Q4 Measurement Method card; (10) Technical & Software/Hardware Specifications card; (11) System KPI & Benchmark Verification card with E2B automated test runner; (12) Code & Artifact File Upload card.
+- **Files touched:** `apps/web/src/main.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Overhaul Solution Sandbox UI Styling & Form Aesthetics
+- **What was implemented:** Upgraded the Solution Sandbox page UI to match official Startup India / DPIIT government portal standards: (1) Added generous 32px/36px card padding, smooth subtle section shadows (`box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03)`), and clean saffron section header dividers (`border-left: 5px solid #ea580c`); (2) Upgraded MCQ radio option pills with saffron borders, soft orange active background (`#fff7ed`), bold contrast labels, and glowing radio dot indicators; (3) Redesigned the top Scope Selection cards (Software / Hardware / Hybrid) with large icons, clear subtitles, and hover elevation; (4) Enhanced the Target Ministry header banner with a gradient backdrop (`linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)`) and white summary chip; (5) Upgraded input fields, textareas, file upload triggers, and the primary submit button with a rich saffron gradient (`linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%)`) and hover elevation.
+- **Files touched:** `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Enhance Solution Sandbox with Comprehensive MCQ Evaluation & Dynamic Tech Specs
+- **What was implemented:** Enhanced the Solution Sandbox form with all required structured questions: (1) Added top classification selector "Is your solution Software, Hardware, or Both?" which dynamically tailors Section 4 Technical Specifications (Microcontrollers, sensors, power footprint for hardware vs tech stack and cloud API model for software); (2) Q1 MCQ Solution Type (AI/ML, Web App, Mobile, Hardware/IoT, Hybrid, Infrastructure, Service, Other); (3) Q2 MCQ Primary Outcome (Accuracy, Speed/Latency, Cost Reduction, Productivity, Resource Utilization, Reliability, Safety, Citizen Satisfaction, Revenue, Error Reduction, Environmental Impact, Accessibility, Other); (4) Outcome explanation & process improvement textareas; (5) Q3 MCQ Expected Improvement Percentage (0–10%, 10–25%, 25–50%, 50–75%, >75%), target value input, and performance direction radio (Higher vs Lower is better); (6) Q4 MCQ Measurement Method (Automated sandbox, Uploaded dataset, API response, Test report, Sensor/device data, Government data, User feedback, Manual evaluator, Combination); (7) Preserved Section 3 "System KPI & Benchmark Verification" with automated E2B sandbox test runner simulation and product code/file upload components.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Add Problem Statements & Interactive Solution Sandbox Flow
+- **What was implemented:** Added Startup India reference features: (1) Added "Problem Statements You Might Be Interested In" personalized AI recommendations section to Overview page with Theme tags, match scores, KPI benchmarks, grant details, and direct Apply buttons; (2) Renamed header navigation tab to "Problem Statements" with open challenge count badge, full filterable listing by Theme (Agriculture & Rural, Water & Sanitation, Food & Nutrition, Healthcare & AI, Clean Energy & Mobility) and search bar; (3) Built multi-section interactive Solution Sandbox application modal/view with solution overview, value proposition, interactive automated E2B system benchmark verification test runner, tech stack & hardware specifications inputs, source code repository/document attachment uploaders, and submission confirmation flow.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Remove stats section from login/register first page
+- **What was implemented:** Completely removed the DPIIT / BHASKAR statistics banner section from the first page (login/register screen).
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Relocate stats banner above auth intro & login sections
+- **What was implemented:** Removed the heavy hero background wrapper and cloud wave divider from the login page, and moved the DPIIT / BHASKAR statistics pill banner directly above the "Build what matters" left section and Login right section inside the main auth shell.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly with 0 errors.
+
+### [2026-09-24] — feature/simran-frontend-startup — Full-width responsive web application layout
+- **What was implemented:** Removed narrow max-width limits (1320px, 820px, 660px) and margin gaps across headers, workspace navigation, dashboard bodies, detail pages, and empty-state cards. Upgraded layout to span 100% full screen width with clean responsive grid alignment across computer displays.
+- **Files touched:** `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** Verified on full-screen displays. `pnpm --filter web build` passes cleanly. Dev server running on `http://localhost:5175/`.
+
+### [2026-09-24] — feature/simran-frontend-startup — Move startup navigation into page header
+- **What was implemented:** Converted the approved startup dashboard's vertical sidebar into a horizontal top workspace header containing the logo, workspace navigation, challenge count, help link, and verified startup profile.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** Verified in the approved workspace browser state. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-24] — feature/simran-frontend-startup — Interactive Login and Register UI with Saffron Government Theme
+- **What was implemented:** Added rich interactive UI capabilities to the Login and Register pages using the official Startup India / DPIIT government color palette. Added one-click demo credentials and sample data autofill buttons, interactive password show/hide visibility toggles, dynamic password strength meter (Weak/Medium/Strong bar), interactive document attachment component with file preview and remove option, interactive language dropdown menu, interactive top header search bar with toast notifications, and clickable government platform benefit tabs on the intro banner.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly. All content, form state, and authentication/workspace flows are completely preserved.
+
+### [2026-09-24] — feature/simran-frontend-startup — Square header corners
+- **What was implemented:** Removed rounded corners from the government header, workspace header, and dashboard shell so the header sections use square corners.
+- **Files touched:** `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** Browser verification reports 0px radius for all three containers. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-24] — feature/simran-frontend-startup — Remove header section gap
+- **What was implemented:** Removed the remaining gap between the government header and startup workspace header while preserving normal layout flow and preventing overlap.
+- **Files touched:** `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** Browser geometry confirms a 0px gap and no overlap. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-24] — feature/simran-frontend-startup — Refine government header spacing and branding
+- **What was implemented:** Removed UdyamSetu branding from the government header row and reduced the gap before the startup workspace section from 20px to 6px.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** UdyamSetu remains in the workspace header below; browser geometry confirms a 6px gap. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-24] — feature/simran-frontend-startup — Add government header above workspace
+- **What was implemented:** Added the government utility bar and DPIIT/Startup India branding, language selector, search field, and user controls above the approved startup workspace header. Kept the About/Recognition/Funding navigation row removed.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** Verified in the approved workspace browser state with the government header above the workspace header. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-24] — feature/simran-frontend-startup — Remove startup workspace labels
+- **What was implemented:** Removed visible `Startup workspace` labels from the approved dashboard header and detail-page content while keeping the dashboard functionality and review status messaging intact.
+- **Files touched:** `apps/web/src/main.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** Only pending-review copy still mentions the workspace being unlocked. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-24] — feature/simran-frontend-startup — Move startup navigation into page header
+- **What was implemented:** Converted the approved startup dashboard's vertical sidebar into a horizontal top workspace header containing the logo, workspace navigation, challenge count, help link, and verified startup profile.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** Verified in the approved workspace browser state. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-24] — feature/simran-frontend-startup — Make dashboard header primary
+- **What was implemented:** Removed the government portal header and About/Recognition/Funding navigation row from the approved startup dashboard so the dashboard's own Overview/Verified/Log out header is now the page header.
+- **Files touched:** `apps/web/src/main.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** Pending-review view still uses the government header. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-24] — feature/simran-frontend-startup — Remove government banner from auth pages
+- **What was implemented:** Removed the government navigation header and saffron statistics banner from the login/register view while keeping them on pending and approved workspace views.
+- **Files touched:** `apps/web/src/main.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** Auth page verified with no government nav or saffron hero rendered. `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-23] — feature/simran-frontend-startup — Redesign UI with official Indian Government Portal theme
+- **What was implemented:** Transformed the portal UI to match the official Startup India / DPIIT Government of India web portal theme (based on user reference design). Added dark government topbar with Ashoka Lion Capital emblem, Ministry of Commerce and Industry title, toll-free support line, DPIIT #startupindia branding, Azadi Ka Amrit Mahotsav 75 badge, language selector, search bar with orange submit button, top government navigation menu, saffron-orange hero background with statistics pill counters (254,623 DPIIT Recognised Startups), and refined form/card styling without altering any content or underlying state.
+- **Files touched:** `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of startup portal UI refinement.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web build` passes cleanly. All content, form state, and authentication/workspace flows are completely preserved.
+
+### [2026-09-23] — feature/simran-frontend-startup — Remove startup category field
+- **What was implemented:** Removed startup category collection, persistence, profile display, and related copy from the Vite registration flow.
+- **Files touched:** `apps/web/src/main.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of the startup portal frontend prototype.
+- **Anything the next session/teammate needs to know:** `pnpm --filter web lint` and `pnpm --filter web build` pass.
+
+### [2026-09-23] — feature/simran-frontend-startup — Vite startup registration and workspace flow
+- **What was implemented:** Replaced the Next.js web shell with a Vite + React frontend. Added startup login with credential matching, registration for DPIIT ID, founder details, email, DOB, education, category, password, description and certificate attachment UI; added the 3–4 business day pending-review state, admin approval preview, and an approved startup workspace covering profile, government challenges, matched schemes, milestones, and solution sandbox.
+- **Files touched:** `apps/web/package.json`, `apps/web/index.html`, `apps/web/src/main.tsx`, `apps/web/src/styles.css`, `apps/web/tsconfig.json`, `apps/web/tsconfig.node.json`, `apps/web/vite.config.ts`, removed the old `apps/web/app/` Next route files and Next config files, root `package.json`, `pnpm-lock.yaml`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** New frontend prototype continuing the startup portal branch.
+- **Anything the next session/teammate needs to know:** The frontend stores one prototype startup record in localStorage under `udyamsetu-startup`; the admin approval action is intentionally a local preview until the API/admin workflow is wired. The React entrypoint must mount `App` with `createRoot`, which fixed the initial blank-screen issue. `pnpm --filter web lint` and `pnpm --filter web build` pass. Dev server is available at `http://localhost:5173/`.
 
 ### [2026-09-22] — main — README rewrite: branch-mapped ownership, multi-provider LLM docs
 - **What was implemented:** Rewrote `README.md` end to end to reflect the

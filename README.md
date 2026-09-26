@@ -284,6 +284,7 @@ cd ../..
 Since your Python venv only needs creating once, tomorrow's startup is just
 the three Terminal 1/2/3 blocks above — no setup steps repeat.
 
+
 ## LLM providers
 
 `apps/ai-engine` is built to call more than one LLM provider rather than
@@ -323,3 +324,83 @@ Don't edit outside your assigned folder without a heads-up — see
 `docs/api.yaml` and `database/prisma/schema.prisma` are the source of truth
 for every endpoint and table. See `AGENTS.md` for the full rules before
 changing either.
+
+## Startup portal branch: features and local run
+
+This section describes the current `feature/simran-frontend-startup` branch.
+The frontend in this branch is a Vite + React single-page app; it is not the
+Next.js frontend described in the baseline architecture and setup sections
+above. Use the branch-specific commands here when working on this portal.
+
+### What this branch contains
+
+- Login and registration screens, a pending-review state, an approval preview,
+  and the approved startup workspace.
+- An overview dashboard with navigable metrics and startup recommendations.
+- A searchable, filterable Problem Statements catalog with bookmarks, quick
+  views, and sharing actions.
+- A Solution Sandbox form for Software, Hardware, or Both solutions, including
+  scope-aware required fields, artifact uploads, submission checks, and a
+  loading and streamed benchmark-report experience.
+- A Milestones timeline with progress, status filters, expandable details, and
+  a demo-slot interaction.
+- An MSINS 2025 Schemes page with eligibility checks, document attachments,
+  and application actions.
+- A startup Profile page with registration details and document previews.
+- Government-style portal headers, global catalog search, notifications, and
+  responsive styling.
+
+The current frontend is a local prototype: registration and profile data are
+saved in the browser's `localStorage` under `udyamsetu-startup`. Data is local
+to that browser and is not shared with other users or connected to the API or
+database. Clearing the browser's site data removes the saved prototype record.
+You do not need Supabase, the API, the AI engine, Python, or cloud API keys to
+run this frontend by itself.
+
+### Where the work lives
+
+- [`apps/web/src/main.tsx`](apps/web/src/main.tsx) contains the React app,
+  startup workflow, page views, and interactive state.
+- [`apps/web/src/styles.css`](apps/web/src/styles.css) contains the portal
+  layout, page styles, responsive rules, and visual interaction states.
+- [`apps/web/index.html`](apps/web/index.html) is the Vite HTML entry point.
+- [`apps/web/package.json`](apps/web/package.json) lists the frontend
+  dependencies and scripts; [`apps/web/vite.config.ts`](apps/web/vite.config.ts)
+  configures Vite.
+
+### Run it on your laptop
+
+Install Node.js 20.x and pnpm, then clone the repository and check out this
+branch. If you already have the repository, run the `git fetch` and `git
+switch` commands from its root.
+
+```bash
+git clone <your-repo-url>
+cd Udyam
+git fetch origin
+git switch feature/simran-frontend-startup
+pnpm install
+pnpm dev:web
+```
+
+Open <http://localhost:5173/>. Vite may select the next available port if
+5173 is already in use. No separate dependency installation or frontend
+`.env.local` file is required for this local prototype; `pnpm install` at the
+repository root installs the dependencies declared by the workspace,
+including React, Vite, TypeScript, and the UI libraries used by the app.
+
+You can also start the frontend from its directory:
+
+```bash
+cd apps/web
+pnpm dev
+```
+
+From the repository root, `pnpm run dev` is not a configured script. Use
+`pnpm dev:web` to start the web app. To check the frontend without starting
+the server, run these from the repository root:
+
+```bash
+pnpm --filter web lint
+pnpm --filter web build
+```

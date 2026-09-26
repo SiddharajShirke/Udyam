@@ -5,6 +5,7 @@
   "description": "InnovateProcure — SIH 2026 PS 26136 — government-startup procurement platform",
   "scripts": {
     "dev:web": "pnpm --filter web dev",
+    "web:dev": "pnpm --filter web dev",
     "dev:api": "pnpm --filter api dev",
     "lint": "pnpm --filter web lint && pnpm --filter api lint",
     "typecheck": "pnpm --filter web exec tsc --noEmit && pnpm --filter api exec tsc --noEmit"
