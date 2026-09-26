@@ -1,21 +1,108 @@
-# Udyam
+# Udyam — Government Innovation & Procurement Platform
 
-A government-startup procurement platform built for SIH 2026, Problem
-Statement 26136. It connects ministries with startups through an
-AI-assisted pipeline: problem formatting → startup matchmaking → sandboxed
-evaluation → contract drafting, across four roles — Admin, Ministry,
-Evaluator, and Startup.
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Plus+Jakarta+Sans&weight=700&size=22&pause=1200&color=EA580C&center=true&vCenter=true&width=850&height=50&lines=Udyam+%E2%80%94+Government+Procurement+Platform;SIH+2026+%E2%80%A2+Problem+Statement+26136;Ministry+%E2%80%A2+Evaluator+%E2%80%A2+Admin+%E2%80%A2+Startup;AI-Assisted+Procurement+%26+Sandboxed+Evaluation" alt="Udyam Animated Banner" />
+</p>
 
-See `docs/ARCHITECTURE.md` for the full system design and `AGENTS.md` for
-the living project log every session appends to.
+<p align="center">
+  <img src="https://img.shields.io/badge/SIH_2026-Problem_26136-orange.svg?style=for-the-badge&logo=target" alt="SIH 2026" />
+  <img src="https://img.shields.io/badge/Government_of_India-DPIIT-blue.svg?style=for-the-badge" alt="DPIIT" />
+  <img src="https://img.shields.io/badge/Frontend-React_18_+_Vite-61DAFB.svg?style=for-the-badge&logo=react" alt="React 18" />
+  <img src="https://img.shields.io/badge/Styling-Tailwind_CSS-38B2AC.svg?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Status-Feature_Complete-success.svg?style=for-the-badge" alt="Status" />
+</p>
 
-## Architecture at a glance
+---
+
+A next-generation government-startup procurement platform connecting Central and State Ministries with innovative startups through an end-to-end AI-assisted pipeline: **Problem Definition → Matchmaking → Sandboxed KPI Evaluation → Contract Drafting**.
+
+See `docs/ARCHITECTURE.md` for full system design and `AGENTS.md` for the session changelog.
+
+---
+
+## 🧭 How to Access & Navigate the Portals
+
+The frontend runs locally on **`http://localhost:3001`**. All Government portals (**Ministry**, **Evaluator**, and **Admin**) are integrated with seamless demo session switching.
+
+### 🔑 Demo Credentials & Quick Access
+
+| Portal Role | Demo Email | Access Route | Target Portal & Capabilities |
+|---|---|---|---|
+| **🏛️ Ministry** | `officer@ministry.gov.in` | [`/login`](http://localhost:3001/login) | Problem posting, sandbox telemetry, AI evaluation review, contract drafting |
+| **📋 Evaluator** | `evaluator@institution.ac.in` | [`/login`](http://localhost:3001/login) | Technical evaluation queue, 1–5 KPI scoring, rubric assessment |
+| **🛡️ Admin** | `admin@gov.in` | [`/login`](http://localhost:3001/login) | Registration approvals, audit logging, security compliance |
+| **🚀 Startup** | `founder@startup.in` | [`/startup`](http://localhost:3001/startup) | Challenge discovery & submission portal |
+
+> 💡 **Quick Login Tip:** On the [`/login`](http://localhost:3001/login) screen, select the role tab (**Ministry**, **Evaluator**, or **Admin**), pick your **Ministry / Department** from the dropdown (for Ministry role), and click **Sign In** to immediately enter the designated portal.
+
+---
+
+## 🗺️ Complete Route Navigation Map
+
+```mermaid
+graph TD
+  Landing["🌐 Public Landing (/)"] --> Login["🔐 Government Sign In (/login)"]
+  Landing --> MinReq["📝 Ministry Onboarding (/signup/ministry)"]
+  Landing --> EvalReq["📝 Evaluator Onboarding (/signup/evaluator)"]
+  
+  Login -->|Ministry Role| MinDash["🏛️ Ministry Dashboard (/ministry)"]
+  Login -->|Evaluator Role| EvalDash["📋 Evaluator Dashboard (/evaluator)"]
+  Login -->|Admin Role| AdminDash["🛡️ Admin Dashboard (/admin)"]
+
+  subgraph Ministry Portal
+    MinDash --> MinProb["Problem Statements (/ministry/problems)"]
+    MinDash --> MinCreate["Post Problem (/ministry/problems/create)"]
+    MinDash --> MinDetail["Problem Detail (/ministry/problems/:id)"]
+    MinDash --> MinSandbox["E2B Sandbox Telemetry (/ministry/sandbox)"]
+    MinDash --> MinEval["AI Evaluation (/ministry/evaluation)"]
+    MinDash --> MinContract["Contract Drafting (/ministry/contracts)"]
+  end
+
+  subgraph Evaluator Portal
+    EvalDash --> EvalQueue["Review Queue (/evaluator/queue)"]
+    EvalDash --> EvalAssigned["Assigned Reviews (/evaluator/assigned)"]
+    EvalDash --> EvalReview["KPI Rubric Scoring (/evaluator/review/:id)"]
+  end
+
+  subgraph Admin Portal
+    AdminDash --> AdminReg["Registrations (/admin/registrations)"]
+    AdminDash --> AdminLogs["System Audit Logs (/admin/logs)"]
+    AdminDash --> AdminSec["Security & Compliance (/admin/security)"]
+  end
+```
+
+### Direct URL Index
+
+#### 🏛️ Ministry Portal Routes
+- **Dashboard:** [`http://localhost:3001/ministry`](http://localhost:3001/ministry)
+- **Problem Statements Directory:** [`http://localhost:3001/ministry/problems`](http://localhost:3001/ministry/problems)
+- **Create New Problem:** [`http://localhost:3001/ministry/problems/create`](http://localhost:3001/ministry/problems/create)
+- **Problem Detail & Metrics:** [`http://localhost:3001/ministry/problems/PRB-1037`](http://localhost:3001/ministry/problems/PRB-1037)
+- **Sandboxed Test Bench & Logs:** [`http://localhost:3001/ministry/sandbox`](http://localhost:3001/ministry/sandbox)
+- **AI-Assisted Evaluation:** [`http://localhost:3001/ministry/evaluation`](http://localhost:3001/ministry/evaluation)
+- **Automated Contract Generator:** [`http://localhost:3001/ministry/contracts`](http://localhost:3001/ministry/contracts)
+
+#### 📋 Evaluator Portal Routes
+- **Dashboard:** [`http://localhost:3001/evaluator`](http://localhost:3001/evaluator)
+- **Assigned Reviews:** [`http://localhost:3001/evaluator/assigned`](http://localhost:3001/evaluator/assigned)
+- **Review Queue:** [`http://localhost:3001/evaluator/queue`](http://localhost:3001/evaluator/queue)
+- **Detailed Scoring Screen:** [`http://localhost:3001/evaluator/review/REV-101`](http://localhost:3001/evaluator/review/REV-101)
+
+#### 🛡️ Admin Portal Routes
+- **Dashboard:** [`http://localhost:3001/admin`](http://localhost:3001/admin)
+- **Registration Management:** [`http://localhost:3001/admin/registrations`](http://localhost:3001/admin/registrations)
+- **Audit Logs:** [`http://localhost:3001/admin/logs`](http://localhost:3001/admin/logs)
+- **Security & Compliance:** [`http://localhost:3001/admin/security`](http://localhost:3001/admin/security)
+
+---
+
+## 🏛️ Architecture at a glance
 
 Three independent services, one monorepo:
 
 | Service | Stack | Port | Talks to |
 |---|---|---|---|
-| `apps/web` | Next.js 14 (App Router) | 3000 | `apps/api` |
+| `apps/web` | React + Vite | 3001 | `apps/api` |
 | `apps/api` | Node.js + Express + TypeScript | 5000 | Supabase PostgreSQL, `apps/ai-engine` |
 | `apps/ai-engine` | Python + FastAPI | 8000 | Supabase PostgreSQL, Qdrant, LLM providers, `apps/api` |
 
@@ -113,7 +200,7 @@ DIRECT_URL="postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:
 JWT_SECRET="<any long random string>"
 INTERNAL_SECRET="<any long random string — must match ai-engine's .env exactly>"
 AI_ENGINE_URL="http://localhost:8000"
-CORS_ORIGIN="http://localhost:3000"
+CORS_ORIGIN="http://localhost:3001"
 PORT=5000
 ```
 
@@ -155,7 +242,7 @@ cp apps/web/.env.example apps/web/.env.local
 Fill in:
 
 ```
-NEXT_PUBLIC_API_URL="http://localhost:5000"
+VITE_API_URL="http://localhost:5000"
 ```
 
 ### Step 7 — Create and activate the Python virtual environment
@@ -250,14 +337,14 @@ curl http://localhost:8000/health
 
 Expected: `{"status":"ok"}`
 
-**Terminal 3 — Next.js Frontend**
+**Terminal 3 — React + Vite Frontend**
 
 ```bash
 cd udyam/apps/web
 pnpm dev
 ```
 
-Open http://localhost:3000 in a browser — you should see the login page
+Open http://localhost:3001 in a browser — you should see the Udyam workspace
 (`/` redirects there automatically).
 
 ## Quick reference — every command in order (copy-paste block for setup)

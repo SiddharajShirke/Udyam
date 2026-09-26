@@ -1,0 +1,34 @@
+import { Link, useParams } from "react-router-dom";
+import { ArrowRight, CheckCircle2, ClipboardCheck, ShieldCheck, Target } from "lucide-react";
+import { PageHeader } from "../components/ui/PageHeader";
+import { Breadcrumb } from "../components/ui/Breadcrumb";
+import { Card, CardContent, CardHeader } from "../components/ui/Card";
+import { StatusBadge } from "../components/ui/StatusBadge";
+import { Button } from "../components/ui/Button";
+import { getProblem, PARTICIPANTS } from "../lib/ministryData";
+import { DEMO_PARTICIPANT } from "../mocks/demoData";
+
+export default function MinistryEvaluationPage() {
+  const { id } = useParams();
+  const problem = getProblem(id);
+
+  return (
+    <div className="space-y-6">
+      <Breadcrumb items={[{ label: "Ministry", href: "/ministry" }, { label: "Evaluation", href: "/ministry/evaluation/PRB-1042" }, { label: problem.id }]} />
+      <PageHeader title="Evaluation" description={`Review structured evaluation results for ${problem.title}.`} actions={<StatusBadge status="active" label="In Progress" />} />
+      <Card><CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-caption font-bold uppercase tracking-widest text-brand-orange">SELECTED CHALLENGE</p><h2 className="mt-1 text-xl font-bold text-[#162b47]">{problem.title}</h2><p className="mt-1 text-caption text-gov-text-secondary">{problem.id} · {PARTICIPANTS.length} participants · structured ministry review</p></div><div className="flex h-10 w-10 items-center justify-center bg-brand-orange-tint text-brand-orange"><ClipboardCheck className="h-5 w-5" aria-hidden="true" /></div></CardContent></Card>
+      <Card><CardHeader><h2 className="text-xl font-bold text-[#162b47]">KPI Comparison</h2><p className="mt-1 text-caption text-gov-text-secondary">Scores are demonstration data and represent the structured review shape.</p></CardHeader><CardContent className="p-0"><div className="overflow-x-auto"><table className="w-full min-w-[700px] text-body"><thead><tr className="border-b border-gov-border-light">{["Participant", "Technical performance", "Field usability", "Scalability", "Overall score"].map((heading) => <th key={heading} className="px-5 py-3 text-left text-caption font-semibold uppercase tracking-wider text-gov-text-secondary">{heading}</th>)}</tr></thead><tbody className="divide-y divide-gov-border-light">{comparison.map((row) => <tr key={row.participant} className="hover:bg-gov-surface/50"><td className="px-5 py-3 font-semibold text-gov-text-primary">{row.participant}</td>{[row.kpi1, row.kpi2, row.kpi3].map((score) => <td key={score} className="px-5 py-3"><div className="flex items-center gap-2"><div className="h-1.5 w-20 bg-gov-surface"><div className={`h-full ${score >= 85 ? "bg-gov-success" : "bg-brand-orange"}`} style={{ width: `${score}%` }} /></div><span className="text-caption text-gov-text-secondary">{score}%</span></div></td>)}<td className="px-5 py-3 font-display text-2xl font-bold text-[#162b47]">{row.overall}</td></tr>)}</tbody></table></div></CardContent></Card>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2"><Card><CardHeader><div className="flex items-center gap-2"><Target className="h-4 w-4 text-brand-orange" aria-hidden="true" /><h2 className="text-xl font-bold text-[#162b47]">Evaluation Summary</h2></div></CardHeader><CardContent className="space-y-5"><Summary icon={Target} title="Technical Performance" text="Leading submissions are meeting the latency and reliability thresholds in the sandbox." /><Summary icon={ClipboardCheck} title="KPI Performance" text={`${DEMO_PARTICIPANT.name} currently leads on the combined KPI score with consistent repeat runs.`} /><Summary icon={ShieldCheck} title="Compliance" text="All active submissions have provided the required data responsibility and eligibility declarations." /><Summary icon={CheckCircle2} title="Overall Assessment" text="The leading participant is ready for ministry review and the next procurement step." /></CardContent></Card><Card><CardHeader><p className="text-caption font-bold uppercase tracking-widest text-brand-orange">REPORT NOTE</p><h2 className="mt-1 text-xl font-bold text-[#162b47]">Evaluation Report</h2></CardHeader><CardContent className="space-y-4 text-sm leading-relaxed text-gov-text-secondary"><p><strong className="text-gov-text-primary">Summary:</strong> The evaluation indicates a strong fit for a controlled pilot with the leading participant.</p><div><p className="font-semibold text-gov-text-primary">Key findings</p><ul className="mt-2 list-disc space-y-1 pl-5"><li>Performance is above the defined threshold across repeat runs.</li><li>Offline-tolerant monitoring remains usable in low-connectivity scenarios.</li><li>Deployment support and data retention controls need final confirmation.</li></ul></div><div className="border-l-2 border-brand-orange pl-3"><p className="font-semibold text-gov-text-primary">Strengths</p><p className="mt-1">Reliable monitoring, clear operator feedback, and a practical field workflow.</p></div><div className="border-l-2 border-gov-warning pl-3"><p className="font-semibold text-gov-text-primary">Areas requiring attention</p><p className="mt-1">Confirm scale-up support, training responsibilities, and data retention controls before contracting.</p></div></CardContent></Card></div>
+      <Card className="border-brand-orange/30"><CardContent className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-caption font-bold uppercase tracking-widest text-brand-orange">SELECTION / NEXT STEP</p><h2 className="mt-1 text-xl font-bold text-[#162b47]">Selected Participant</h2><p className="mt-1 text-sm text-gov-text-secondary">{DEMO_PARTICIPANT.name} · recommended for ministry review</p></div><div className="flex flex-col gap-2 sm:flex-row"><StatusBadge status="approved" label="Recommended" /><Link to={`/ministry/contracts/${problem.id}`}><Button>Proceed to Contract <ArrowRight className="h-4 w-4" aria-hidden="true" /></Button></Link></div></CardContent></Card>
+    </div>
+  );
+}
+
+const comparison = [
+  { participant: DEMO_PARTICIPANT.name, kpi1: 94, kpi2: 91, kpi3: 88, overall: 91 },
+  { participant: "AgriSense Technologies", kpi1: 86, kpi2: 84, kpi3: 82, overall: 84 },
+  { participant: "FieldFrame AI", kpi1: 78, kpi2: 76, kpi3: 74, overall: 76 },
+  { participant: "Bharat Crop Systems", kpi1: 74, kpi2: 72, kpi3: 70, overall: 72 },
+];
+
+function Summary({ icon: Icon, title, text }: { icon: typeof Target; title: string; text: string }) { return <div className="flex gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center bg-brand-orange-tint text-brand-orange"><Icon className="h-4 w-4" aria-hidden="true" /></span><div><h3 className="text-sm font-semibold text-gov-text-primary">{title}</h3><p className="mt-1 text-sm leading-relaxed text-gov-text-secondary">{text}</p></div></div>; }
