@@ -29,13 +29,24 @@ const config: Config = {
           "draft": "#85929E",
           "draft-light": "#F2F3F4",
         },
+        brand: {
+          orange: "#E86000",
+          "orange-light": "#FF7A1A",
+          "orange-dark": "#C04E00",
+          "orange-surface": "#FFF4ED",
+          "orange-tint": "#FFEEDD",
+          nav: "#1A1A2E",
+          "nav-light": "#252540",
+          cream: "#FFFAF5",
+        },
       },
       fontFamily: {
         sans: [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "Segoe UI",
+          "DM Sans",
+          "sans-serif",
+        ],
+        display: [
+          "Barlow Condensed",
           "sans-serif",
         ],
       },

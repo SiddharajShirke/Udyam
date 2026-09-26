@@ -7,7 +7,7 @@ InnovateProcure is a government-startup procurement platform built for SIH
 Evaluator, Startup — through an AI-assisted pipeline that takes a ministry's
 problem statement through formatting, startup matchmaking, sandboxed
 evaluation, and contract drafting. The system is a three-service monorepo:
-a Next.js 14 frontend (`apps/web`) serving all four portals, a Node/Express
+ a React + Vite frontend (`apps/web`) serving all four portals, a Node/Express
 REST API (`apps/api`), and a Python/FastAPI AI engine (`apps/ai-engine`)
 that hosts the AI agents and the E2B sandbox runner.
 
@@ -16,7 +16,7 @@ that hosts the AI agents and the E2B sandbox runner.
 ```
 innovateprocure/
 ├── apps/
-│   ├── web/                        # Next.js 14 — all 4 role-based portals, one codebase
+│   ├── web/                        # React + Vite — all 4 role-based portals, one codebase
 │   │   ├── app/(auth)/login/
 │   │   ├── app/(admin)/
 │   │   ├── app/(ministry)/
@@ -53,7 +53,7 @@ innovateprocure/
   (each copied from its own `.env.example` — see README.md for the full
   one-time setup). `INTERNAL_SECRET` must be identical in `apps/api/.env`
   and `apps/ai-engine/.env`.
-- Run frontend: `cd apps/web && pnpm dev` → http://localhost:3000
+- Run frontend: `cd apps/web && pnpm dev` → http://localhost:3001
 - Run API: `cd apps/api && pnpm dev` → http://localhost:5000
 - Run AI engine: `cd apps/ai-engine && uvicorn main:app --reload --port 8000`
   (activate the venv first: `source .venv/bin/activate` /
@@ -100,6 +100,198 @@ Every work session ends by appending a new entry here, in this exact format:
 
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
+
+### [2026-09-26] — feature/vaishnavi-frontend-govt — Ministry selection card styled to reference on Login & Signup
+- **What was implemented:** Styled the Ministry selection field on both `LoginPage.tsx` and `MinistrySignupPage.tsx` with a distinct dashed border container, "Select Ministry" label, "Required" badge, "Select your Ministry" placeholder, and descriptive helper text ("The selected Ministry determines the Ministry scope of the account."). Also exported shared `MINISTRY_OPTIONS` from `ministryData.ts` and added the workflow sequence banner to the Ministry request form.
+- **Files touched:** `apps/web/src/lib/ministryData.ts`, `apps/web/src/pages/LoginPage.tsx`, `apps/web/src/pages/MinistrySignupPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Ministry portal authentication and onboarding reference alignment.
+- **Anything the next session/teammate needs to know:** `tsc --noEmit` and `vite build` pass cleanly.
+
+### [2026-09-26] — feature/vaishnavi-frontend-govt — Ministry dropdown added to Ministry sign in form
+- **What was implemented:** Added a required "Ministry / Department" dropdown with a full list of Government of India ministries and departments and placeholder "Select your ministry or department" on the login page when the Ministry role is selected, matching the reference registration design.
+- **Files touched:** `apps/web/src/pages/LoginPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Ministry login UI enhancement.
+- **Anything the next session/teammate needs to know:** `tsc --noEmit` and `vite build` pass cleanly.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Form text size readability enhancements & dev server run
+- **What was implemented:** Increased font sizes and field padding across all form controls (Input, Select, Textarea, ScoreCriterion, LoginPage, and signup pages) for significantly improved readability and accessibility. Launched the Vite dev server on `http://localhost:3001/`.
+- **Files touched:** `apps/web/src/components/ui/Input.tsx`, `apps/web/src/components/ui/Select.tsx`, `apps/web/src/components/ui/Textarea.tsx`, `apps/web/src/pages/LoginPage.tsx`, `apps/web/src/components/evaluator/ScoreCriterion.tsx`, `apps/web/src/pages/MinistryProblemCreatePage.tsx`, `apps/web/src/pages/MinistrySignupPage.tsx`, `apps/web/src/pages/EvaluatorSignupPage.tsx`, `apps/web/src/pages/StartupSignupPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Form accessibility and readability polish.
+- **Anything the next session/teammate needs to know:** Vite development server is running on `http://localhost:3001/`. `tsc` and `vite build` pass cleanly.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Khelo India footer logo verified removed
+- **What was implemented:** Verified and confirmed that the footer contains only the Government of India emblem, DPIIT/#startupindia identity, newsletter subscription, last updated notice, helpline details, and portal navigation, with no Khelo India logo present.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Public landing page refinement.
+- **Anything the next session/teammate needs to know:** `vite build` passes cleanly.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Landing hero information panel removed
+- **What was implemented:** Removed the “Udyam at a glance” panel and its Challenge stage / Review model labels from the public landing hero, leaving the official introduction and primary CTAs as the focus.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing public landing content refinement.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The root page returns `200` on `http://localhost:3001/`.
+
+### [2026-09-25] — feature/vaishnavijawalkar-frontend-govt — Landing copy and typography polish
+- **What was implemented:** Refined landing-page language for official readability: clearer public-sector hero description, concise challenge/workflow section copy, consistent CTA capitalization, and explicit demonstration-content wording. Added restrained interactive display typography with balanced text wrapping and hover/focus title emphasis.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `apps/web/src/globals.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing public landing content and typography polish.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The root page returns `200` on `http://localhost:3001/`; routes and dashboard functionality were unchanged.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Official public-innovation hero copy refinement
+- **What was implemented:** Replaced informal landing hero language with formal government public-innovation copy: “Advancing public services through innovation,” structured challenge/solution/evaluation language, and “Defined” / “Evidence-led” programme signals.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing official public landing content alignment.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The landing page returns `200` on `http://localhost:3001/`; no routes or portal functionality changed.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Official reference landing header and footer restored
+- **What was implemented:** Restored the public landing page's official-portal treatment: Government of India utility bar, DPIIT/#startupindia identity row, verified Azadi Ka Amrit Mahotsav and Khelo India logo assets, official-site-inspired navigation labels, Udyam procurement content, and reference-style subscription/contact/footer bands.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing public landing visual alignment with official website references.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. Browser checks confirm official logo assets render and no horizontal overflow at 375, 640, 1024, or 1440px. Dashboard routes were not modified.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Government frontend final QA and bug-fix pass
+- **What was implemented:** Completed route, interaction, responsive, accessibility, and source-safety QA across the Government frontend. Fixed nested Ministry topbar titles and enabled native required-field validation for the demo login form. No new product functionality or backend integration was added.
+- **Files touched:** `apps/web/src/components/layout/GovernmentLayout.tsx`, `apps/web/src/pages/LoginPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Final validation pass for the Government frontend.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web build` and `corepack pnpm --filter web lint` pass. All requested Government routes load under the correct demo role; modal, search, role switching, score calculation, evaluation submission, logout, and mobile drawer were browser-tested. No horizontal overflow was found at 375, 640, 1024, or 1440px. `/startup` remains an existing placeholder and was not modified per scope.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Government demo mode and centralized workflow data
+- **What was implemented:** Added a lightweight frontend-only Demo Mode notice and profile-menu role switching for Admin, Ministry, and Evaluator using the existing local demo session mechanism. Centralized the primary Smart Water Distribution Monitoring challenge and Demo Innovation Labs participant, then reused those records across Ministry problem/sandbox/evaluation/contract views and the primary Evaluator review.
+- **Files touched:** `apps/web/src/mocks/demoData.ts`, `apps/web/src/lib/ministryData.ts`, `apps/web/src/lib/evaluatorData.ts`, `apps/web/src/pages/MinistryEvaluationPage.tsx`, `apps/web/src/pages/MinistryContractsPage.tsx`, `apps/web/src/components/layout/Topbar.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing frontend Government demo workflow work.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. Profile role switching was browser-tested from Evaluator to Admin; all Government workflow routes and `/startup` return `200`. Demo data remains local/static and backend integration is pending.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Public Udyam Government landing page
+- **What was implemented:** Replaced the root public page with a Udyam-specific Government Innovation Platform landing page. Added official government context, Udyam branding, Government Login and Explore Challenges CTAs, demo-labelled public challenges, a five-step workflow, Government role cards, a public notice, and a focused Udyam footer. Removed Startup India-specific branding, assets, scale claims, and Startup portal CTAs from the root page.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing public Udyam landing experience work.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. Playwright smoke checks show no horizontal overflow at 375, 640, 1024, or 1440px. `/login` and all portal routes remain unchanged.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Government frontend consistency and polish pass
+- **What was implemented:** Unified GovernmentLayout behavior across Admin, Ministry, and Evaluator by fixing nested active navigation, nested page titles, root portal titles, and hook ordering. Normalized Admin metric cards to match Ministry/Evaluator cards, removed the remaining purple Government login accent, and added the missing Ministry create-form breadcrumb.
+- **Files touched:** `apps/web/src/components/layout/GovernmentLayout.tsx`, `apps/web/src/components/layout/Sidebar.tsx`, `apps/web/src/components/layout/MobileSidebar.tsx`, `apps/web/src/components/admin/AdminStatCard.tsx`, `apps/web/src/pages/LoginPage.tsx`, `apps/web/src/pages/MinistryProblemCreatePage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing Government frontend visual and interaction consistency work.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. Playwright smoke checks show no horizontal overflow at 375, 640, 1024, or 1440px on representative Ministry and Evaluator pages. React Router emits only its existing v7 future-flag warnings in the browser console.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Government demo login and role selection
+- **What was implemented:** Replaced the legacy mixed-role login selector with a Government-only demo flow for Admin, Ministry, and Evaluator. Added themed role cards, email/password fields, Remember Me storage choice, local demo session creation, protected GovernmentLayout redirects, visible demo user identity, and a profile-menu logout action. Startup routing and functionality remain untouched.
+- **Files touched:** `apps/web/src/lib/auth.ts`, `apps/web/src/pages/LoginPage.tsx`, `apps/web/src/components/auth/AuthLayout.tsx`, `apps/web/src/components/layout/GovernmentLayout.tsx`, `apps/web/src/components/layout/Topbar.tsx`, `apps/web/src/components/layout/Sidebar.tsx`, `apps/web/src/components/layout/MobileSidebar.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing frontend government portal work; this is a frontend-only demo session boundary.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. Demo sessions use `localStorage` or `sessionStorage` under `udyam.demo.session`; no JWT, API, backend auth, or persistence was added. `/startup` remains unprotected and unchanged.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Interactive landing hero background
+- **What was implemented:** Added a restrained interactive procurement-network background behind the landing hero copy: low-contrast grid, animated scan line and route paths, pulsing nodes, and pointer-responsive node movement. The effect stays behind the headline and preserves the existing government palette and readability.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `apps/web/src/globals.css`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing public landing visual polish.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The landing page returns `200` on `http://localhost:3001/`. No portal, backend, or persistence behavior was changed.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Official logo assets in landing header and footer
+- **What was implemented:** Replaced text approximations with exact public official logo assets for Azadi Ka Amrit Mahotsav in the landing header and Khelo India in the landing footer, preserving the supplied reference proportions and colors. Government emblem remains the official Wikimedia-hosted asset; DPIIT/#startupindia stays as an accessible text lockup because the Startup India-hosted logo endpoint is access-protected.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing public landing reference alignment.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The exact Azadi and Khelo assets both return HTTP `200` from Wikimedia Commons. No backend or portal functionality was changed.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Startup India reference footer alignment
+- **What was implemented:** Replaced the generic public landing footer with the supplied Startup India-style footer: DPIIT/#startupindia identity row, Khelo India wordmark treatment, email subscription form, last-updated block, toll-free contact details, policy/resource links, visitor-count divider, back-to-top control, and compact copyright bar.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing public landing visual alignment.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The landing page returns `200` on `http://localhost:3001/`. Subscription and footer links remain UI-only; no backend integration was added.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Startup India reference header alignment
+- **What was implemented:** Reworked the public landing header to match the supplied Startup India reference: official Government of India utility bar with emblem/contact/social details, DPIIT/#startupindia identity row with search, Sign In/Register actions, white category navigation, and saffron bottom accent. Updated landing navigation styles for the new white header.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing public landing visual alignment.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The landing page returns `200` on `http://localhost:3001/`. The official emblem is loaded from the verified public Wikimedia Government of India asset; no portal/dashboard shell or backend code was changed.
+
+### [2026-09-25] — feature/vaishnavi-frontend-govt — Evaluator portal review workflow
+- **What was implemented:** Built the Evaluator portal with a review dashboard, eight-record assigned-review table with client-side search/status/category filters, recent activity, and a detailed review route. The review screen includes problem and submission summaries, weighted 1–5 KPI scoring, evaluator notes, overall comments, calculated weighted score, completion percentage, local Save Draft feedback, and local Submit Evaluation status transition.
+- **Files touched:** `apps/web/src/App.tsx`, `apps/web/src/lib/evaluatorData.ts`, `apps/web/src/components/evaluator/EvaluatorStatCard.tsx`, `apps/web/src/components/evaluator/ScoreCriterion.tsx`, `apps/web/src/pages/EvaluatorQueuePage.tsx`, `apps/web/src/pages/EvaluatorAssignedPage.tsx`, `apps/web/src/pages/EvaluatorReviewPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing frontend government portal work; Evaluator UI is demo-only and uses local static data/state.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. All requested Evaluator routes return `200` on the local Vite server at `http://localhost:3001/`. No backend calls, persistence, authentication, or API contracts were added.
+
+### [2026-09-24] — feature/vaishnavi-frontend-govt — Official government dashboard shell restyle
+- **What was implemented:** Restyled the shared GovernmentLayout shell used by Ministry, Admin, and Evaluator dashboards to match the supplied Startup India references: replaced the blue sidebar with charcoal grey, added Government of India and DPIIT/#startupindia identity branding, added the official emblem asset, introduced a government utility strip and white identity header with saffron accent, and retained the UDYAM portal label. Mobile navigation receives the same treatment.
+- **Files touched:** `apps/web/src/components/layout/GovernmentBrand.tsx`, `apps/web/src/components/layout/Sidebar.tsx`, `apps/web/src/components/layout/MobileSidebar.tsx`, `apps/web/src/components/layout/Topbar.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing frontend government portal visual alignment.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The emblem is loaded from the public Wikimedia-hosted Government of India asset because the Startup India site logo endpoints returned access-protected responses; the DPIIT/#startupindia wordmark is rendered as accessible text beside it. Startup portal code was not modified.
+
+### [2026-09-24] — feature/vaishnavi-frontend-govt — Ministry portal workflow UI
+- **What was implemented:** Built the Ministry portal UI with local demo data across the dashboard, searchable/filterable government problems table, structured create-problem form, problem detail view, sandbox monitoring, evaluation results, and contract overview. Added nested Ministry routes and kept the existing GovernmentLayout and shared UI system, extending it with Ministry-only stat, activity, and KPI progress components.
+- **Files touched:** `apps/web/src/App.tsx`, `apps/web/src/lib/ministryData.ts`, `apps/web/src/components/ministry/MinistryStatCard.tsx`, `apps/web/src/components/ministry/ActivityFeed.tsx`, `apps/web/src/components/ministry/KpiProgress.tsx`, `apps/web/src/pages/MinistryDashboardPage.tsx`, `apps/web/src/pages/MinistryProblemsPage.tsx`, `apps/web/src/pages/MinistryProblemCreatePage.tsx`, `apps/web/src/pages/MinistryProblemDetailPage.tsx`, `apps/web/src/pages/MinistrySandboxPage.tsx`, `apps/web/src/pages/MinistryEvaluationPage.tsx`, `apps/web/src/pages/MinistryContractsPage.tsx`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing frontend portal work; Ministry UI is demo-only and uses static local state/data.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. All requested Ministry routes return `200` on the local Vite server at `http://localhost:3001/`. No backend calls or persistence were added; contract, sandbox, and approval buttons remain UI-only.
+
+### [2026-09-24] — feature/vaishnavi-frontend-govt — Startup India-inspired public landing refresh
+- **What was implemented:** Refreshed the public landing page with Startup India-inspired government portal structure and source-grounded content: ecosystem metrics, Network/Participate/Access cards, resource-oriented navigation, procurement workflow anchors, and a warmer editorial hero. Added DM Sans + Barlow Condensed typography with subtle interactive heading and card motion.
+- **Files touched:** `apps/web/src/pages/LandingPage.tsx`, `apps/web/src/globals.css`, `apps/web/tailwind.config.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing frontend public landing work.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web lint` and `corepack pnpm --filter web build` pass. The Vite dev server remains available at `http://localhost:3001/`. Source content was based on Startup India portal navigation and about-page material; no external API integration was added.
+
+### [2026-09-24] — feature/vaishnavi-frontend-govt — Admin portal UI: dashboard, registrations, security, audit logs
+- **What was implemented:** Built the full Admin portal UI (4 pages) on top of the Government frontend foundation. `/admin` — polished dashboard with 4 stat cards (Pending Registrations 24, Approved Orgs 186, Active Evaluators 42, Security Alerts 3), registration overview table with live local approve/reject state, and a recent activity feed. `/admin/registrations` — registration management with search + status/type filters (client-side filtering over 10 demo rows), DataTable, and a detail modal with document list, approve/reject buttons. `/admin/security` — 4 stat cards, security events table with Low/Medium/High severity badges, and access policies grid. `/admin/audit-logs` — search + role/action/status filters, DataTable with 12 demo entries, client-side pagination. All interactions are local state only; no backend calls.
+- **Files touched:** `apps/web/src/components/admin/AdminStatCard.tsx` (new), `apps/web/src/pages/AdminDashboardPage.tsx` (overwritten), `apps/web/src/pages/AdminRegistrationsPage.tsx` (overwritten), `apps/web/src/pages/AdminSecurityPage.tsx` (overwritten), `apps/web/src/pages/AdminAuditLogsPage.tsx` (overwritten), `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Admin portal foundation complete. Next: Ministry portal UI.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web build` and `corepack pnpm --filter web lint` both pass with 0 errors. No new npm dependencies added. All data is static demo — no MSW handlers touched.
+
+### [2026-09-24] — feature/vaishnavi-frontend-govt — Preserve frontend skeleton during React + Vite migration
+- **What was implemented:** Converted `apps/web` to React + Vite with React Router while preserving the original placeholder page content, Tailwind styling setup, shared API/auth/query utilities, and MSW handlers. The root route redirects to `/login`.
+- **Files touched:** `apps/web/package.json`, `apps/web/tsconfig.json`, `apps/web/.env.example`, `apps/web/index.html`, `apps/web/vite.config.ts`, `apps/web/tailwind.config.ts`, `apps/web/postcss.config.mjs`, `apps/web/src/`, removed Next-specific `apps/web/app/`, `apps/web/lib/`, `apps/web/mocks/`, `apps/web/next-env.d.ts`, `apps/web/next.config.mjs`, and `apps/web/.eslintrc.json`, plus `README.md` and `pnpm-lock.yaml`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing frontend framework migration; government dashboards remain placeholders as requested.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web build` and `corepack pnpm --filter web lint` pass. Vite served all required paths with `200` on local port `3002` because port `3001` was already occupied. `VITE_API_URL` replaces `NEXT_PUBLIC_API_URL`. No commit or push was made.
+
+### [2026-09-24] — main — Migrate frontend from Next.js to React + Vite
+- **What was implemented:** Replaced the empty Next.js frontend scaffold with a React + Vite app, including Vite scripts/configuration, a working Udyam workspace screen, responsive styling, and updated local run documentation.
+- **Files touched:** `apps/web/package.json`, `apps/web/tsconfig.json`, `apps/web/index.html`, `apps/web/vite.config.ts`, `apps/web/src/main.tsx`, `apps/web/src/styles.css`, removed obsolete Next/Tailwind scaffold files, `README.md`, `AGENTS.md`, `pnpm-lock.yaml`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuation of frontend scaffold work; the web service now runs with Vite rather than Next.js.
+- **Anything the next session/teammate needs to know:** `corepack pnpm --filter web build` passes and the dev server is available at `http://localhost:3001`. The API is running separately at `http://localhost:5001` because macOS Control Center owns port 5000 on this machine. The prior route-specific Next pages were empty scaffold files and were removed during migration.
 
 ### [2026-09-22] — main — README rewrite: branch-mapped ownership, multi-provider LLM docs
 - **What was implemented:** Rewrote `README.md` end to end to reflect the

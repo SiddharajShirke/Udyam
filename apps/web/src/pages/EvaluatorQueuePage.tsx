@@ -1,27 +1,21 @@
+import { Link } from "react-router-dom";
+import { ArrowRight, ClipboardCheck, Clock3, FileCheck2, ListChecks, Star } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader";
 import { Card, CardContent, CardHeader } from "../components/ui/Card";
-import { EmptyState } from "../components/ui/EmptyState";
-import { ListChecks } from "lucide-react";
+import { StatusBadge } from "../components/ui/StatusBadge";
+import { EvaluatorStatCard } from "../components/evaluator/EvaluatorStatCard";
+import { EVALUATOR_ACTIVITY, EVALUATOR_REVIEWS } from "../lib/evaluatorData";
 
 export default function EvaluatorQueuePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Review Queue"
-        description="Pending evaluation reviews"
+        title="Evaluator Portal"
+        description="Review assigned challenges, evaluate submissions, and submit structured assessments."
       />
-      <Card>
-        <CardHeader>
-          <h2 className="text-card-title text-gov-text-primary">Pending Reviews</h2>
-        </CardHeader>
-        <CardContent>
-          <EmptyState
-            icon={ListChecks}
-            title="No pending reviews"
-            description="Review items will appear here once the backend is connected."
-          />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"><EvaluatorStatCard label="Assigned Reviews" value="08" detail="3 due this week" icon={ListChecks} tone="orange" /><EvaluatorStatCard label="Pending Reviews" value="04" detail="2 due within 48 hours" icon={Clock3} tone="amber" /><EvaluatorStatCard label="Completed Reviews" value="12" detail="This evaluation cycle" icon={FileCheck2} tone="green" /><EvaluatorStatCard label="Average Score" value="86%" detail="Across completed reviews" icon={Star} tone="blue" /></div>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.85fr)]"><Card><CardHeader className="flex items-center justify-between gap-3"><div><p className="text-caption font-bold uppercase tracking-widest text-brand-orange">YOUR WORK QUEUE</p><h2 className="mt-1 text-xl font-bold text-[#162b47]">Review Queue</h2></div><Link to="/evaluator/assigned" className="flex items-center gap-1 text-caption font-semibold text-brand-orange hover:gap-2 transition-all">View all <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></Link></CardHeader><CardContent className="p-0"><div className="overflow-x-auto"><table className="w-full min-w-[760px] text-body"><thead><tr className="border-b border-gov-border-light">{["Problem", "Participant", "Assigned date", "Deadline", "Status", "Action"].map((heading) => <th key={heading} className="px-5 py-3 text-left text-caption font-semibold uppercase tracking-wider text-gov-text-secondary">{heading}</th>)}</tr></thead><tbody className="divide-y divide-gov-border-light">{EVALUATOR_REVIEWS.slice(0, 5).map((review) => <tr key={review.id} className="hover:bg-gov-surface/50"><td className="max-w-[220px] px-5 py-3"><Link to={`/evaluator/review/${review.id}`} className="font-semibold text-gov-text-primary hover:text-brand-orange">{review.problem}</Link><span className="mt-0.5 block text-caption text-gov-text-muted">{review.id}</span></td><td className="px-5 py-3 text-caption text-gov-text-secondary">{review.participant}</td><td className="whitespace-nowrap px-5 py-3 text-caption text-gov-text-secondary">{review.assigned}</td><td className="whitespace-nowrap px-5 py-3 text-caption text-gov-text-secondary">{review.deadline}</td><td className="px-5 py-3"><StatusBadge status={review.status} label={review.status === "active" ? "In Progress" : undefined} /></td><td className="px-5 py-3"><Link to={`/evaluator/review/${review.id}`} className="text-caption font-semibold text-brand-orange hover:underline">Review</Link></td></tr>)}</tbody></table></div></CardContent></Card><Card><CardHeader><p className="text-caption font-bold uppercase tracking-widest text-brand-orange">ACTIVITY</p><h2 className="mt-1 text-xl font-bold text-[#162b47]">Recent Activity</h2></CardHeader><CardContent className="pt-0"><div className="divide-y divide-gov-border-light">{EVALUATOR_ACTIVITY.map((item) => <div key={item.id} className="py-4"><p className="text-sm font-semibold text-gov-text-primary">{item.title}</p><p className="mt-1 text-caption text-gov-text-secondary">{item.detail}</p><p className="mt-1 text-caption text-gov-text-muted">{item.time}</p></div>)}</div></CardContent></Card></div>
+      <Card className="border-brand-orange/20 bg-brand-orange-tint/30"><CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex gap-3"><ClipboardCheck className="mt-0.5 h-5 w-5 shrink-0 text-brand-orange" aria-hidden="true" /><div><h2 className="text-lg font-bold text-[#162b47]">Keep every score evidence-led</h2><p className="mt-1 text-sm text-gov-text-secondary">Use the review form to record criterion notes before submitting an assessment.</p></div></div><Link to={`/evaluator/review/${EVALUATOR_REVIEWS[0].id}`} className="text-sm font-semibold text-brand-orange hover:underline">Start next review</Link></CardContent></Card>
     </div>
   );
 }

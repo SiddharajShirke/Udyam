@@ -19,7 +19,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="space-y-1.5">
         {label && (
-          <label htmlFor={selectId} className="block text-body font-medium text-gov-text-primary">
+          <label htmlFor={selectId} className="block text-sm sm:text-base font-semibold text-gov-text-primary">
             {label}
           </label>
         )}
@@ -27,7 +27,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <select
             ref={ref}
             id={selectId}
-            className={`w-full appearance-none px-3 py-2 pr-8 text-body bg-white border rounded-gov transition-colors
+            className={`w-full appearance-none px-3.5 py-2.5 pr-9 text-base bg-white border rounded-gov transition-colors
               focus:outline-none focus:ring-2 focus:ring-gov-blue-accent/40 focus:border-gov-blue-accent
               disabled:bg-gov-surface disabled:text-gov-text-muted disabled:cursor-not-allowed
               ${error ? "border-gov-danger" : "border-gov-border"} ${className}`}
@@ -46,12 +46,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
           <ChevronDown
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gov-text-muted pointer-events-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-gov-text-muted pointer-events-none"
             aria-hidden="true"
           />
         </div>
         {error && selectId && (
-          <p id={`${selectId}-error`} className="text-caption text-gov-danger">
+          <p id={`${selectId}-error`} className="text-sm text-gov-danger">
             {error}
           </p>
         )}
