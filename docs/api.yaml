@@ -661,11 +661,22 @@ components:
       required: [startup_id]
       properties:
         startup_id: { type: string, format: uuid }
+        submission_type:
+          type: string
+          enum: [e2b, external_url]
+          default: e2b
+          description: Submission source used for sandbox evaluation
+        external_url:
+          type: string
+          format: uri
+          nullable: true
+          description: HTTPS endpoint for external_url submissions
 
     SandboxResult:
       allOf:
         - $ref: "#/components/schemas/SandboxResultInput"
         - type: object
+          required: [submission_type]
           properties:
             id: { type: string, format: uuid }
             sandbox_id: { type: string, format: uuid }
@@ -674,6 +685,8 @@ components:
             total_score: { type: number, nullable: true }
             status: { type: string, example: INVITED }
             deploy_count: { type: integer }
+            submission_type: { type: string, enum: [e2b, external_url] }
+            external_url: { type: string, format: uri, nullable: true }
 
     Evaluation:
       type: object
@@ -748,7 +761,10 @@ components:
       properties:
         name: { type: string }
         metric: { type: string }
-        threshold: { type: string }
+        threshold:
+          oneOf:
+            - { type: string }
+            - { type: number }
         weight:
           type: number
           description: Across all KPIs in one response, weights sum to 1.0

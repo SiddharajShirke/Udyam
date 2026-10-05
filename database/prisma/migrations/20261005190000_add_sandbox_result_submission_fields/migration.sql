@@ -1,0 +1,3 @@
+ALTER TABLE "SandboxResult"
+ADD COLUMN IF NOT EXISTS "submission_type" TEXT NOT NULL DEFAULT 'e2b',
+ADD COLUMN IF NOT EXISTS "external_url" TEXT;

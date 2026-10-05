@@ -90,14 +90,16 @@ model Sandbox {
 }
 
 model SandboxResult {
-  id           String   @id @default(uuid())
-  sandbox_id   String
-  startup_id   String
-  token        String?  @unique
-  scores       Json?
-  total_score  Float?
-  status       String   @default("INVITED")
-  deploy_count Int      @default(0)
+  id              String   @id @default(uuid())
+  sandbox_id      String
+  startup_id      String
+  token           String?  @unique
+  scores          Json?
+  total_score     Float?
+  status          String   @default("INVITED")
+  deploy_count    Int      @default(0)
+  submission_type String   @default("e2b")
+  external_url    String?
   @@unique([sandbox_id, startup_id])
 }
 
