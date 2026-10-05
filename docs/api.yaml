@@ -20,6 +20,7 @@ tags:
   - name: startups
   - name: ministries
   - name: audit
+  - name: ai-internal
 
 paths:
   /health:
@@ -410,12 +411,142 @@ paths:
                 items:
                   $ref: "#/components/schemas/AuditLog"
 
+  /ai/matchmaking:
+    post:
+      tags: [ai-internal]
+      summary: Rank approved startups for a problem (internal)
+      security: [{ internalSecret: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [problem_id]
+              properties:
+                problem_id: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Explainable startup rankings
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [matches]
+                properties:
+                  matches:
+                    type: array
+                    items: { $ref: "#/components/schemas/StartupMatch" }
+
+  /ai/log-anomaly:
+    post:
+      tags: [ai-internal]
+      summary: Detect anomalous recent login activity (internal)
+      security: [{ internalSecret: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entity_id: { type: string, nullable: true }
+      responses:
+        "200":
+          description: Login anomaly assessment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LogAnomaly" }
+
+  /ai/quick-assist:
+    post:
+      tags: [ai-internal]
+      summary: Provide stateless role-aware AI help (internal)
+      security: [{ internalSecret: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question, role_context]
+              properties:
+                question: { type: string, minLength: 1 }
+                role_context: { $ref: "#/components/schemas/RoleContext" }
+      responses:
+        "200":
+          description: Plain-language answer
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [answer]
+                properties:
+                  answer: { type: string }
+
+  /ai/hardware/next-question:
+    post:
+      tags: [ai-internal]
+      summary: Get the next adaptive hardware eligibility question (internal)
+      security: [{ internalSecret: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                answers: { type: object, additionalProperties: true }
+      responses:
+        "200":
+          description: The next question, or null when the flow is complete
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [question]
+                properties:
+                  question:
+                    nullable: true
+                    allOf: [{ $ref: "#/components/schemas/HardwareQuestion" }]
+
+  /ai/hardware/score:
+    post:
+      tags: [ai-internal]
+      summary: Score completed hardware eligibility answers (internal)
+      security: [{ internalSecret: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                answers: { type: object, additionalProperties: true }
+      responses:
+        "200":
+          description: Layer-1 eligibility score
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [confidence_score, passed_layer_1]
+                properties:
+                  confidence_score: { type: integer, minimum: 0, maximum: 100 }
+                  passed_layer_1: { type: boolean }
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    internalSecret:
+      type: apiKey
+      in: header
+      name: X-Internal-Secret
 
   parameters:
     id:
@@ -432,6 +563,36 @@ components:
     Role:
       type: string
       enum: [ADMIN, MINISTRY, EVALUATOR, STARTUP]
+
+    RoleContext:
+      type: string
+      enum: [ministry, startup, evaluator, admin]
+
+    StartupMatch:
+      type: object
+      required: [startup_id, match_score, reason]
+      properties:
+        startup_id: { type: string, format: uuid }
+        match_score: { type: number }
+        reason: { type: string }
+
+    LogAnomaly:
+      type: object
+      required: [anomaly_detected, summary, recommended_action]
+      properties:
+        anomaly_detected: { type: boolean }
+        summary: { type: string }
+        recommended_action: { type: string }
+
+    HardwareQuestion:
+      type: object
+      required: [id, text, options]
+      properties:
+        id: { type: string }
+        text: { type: string }
+        options:
+          type: array
+          items: { type: string }
 
     User:
       type: object
