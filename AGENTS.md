@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-10-05] — feature/vaishnavi-frontend-govt — Fix legacy JWT stub lint errors
+- **What was implemented:** Marked unused JWT stub parameters as intentionally unused to restore API lint on this branch.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Maintenance fix on the government frontend branch.
+- **Anything the next session/teammate needs to know:** Preserve the completed JWT implementation from `main` when integrating this branch; the old stubs remain only in this pre-merge snapshot.
+
 ### [2026-09-26] — feature/vaishnavi-frontend-govt — Ministry registration form updated with official fields and demo data autofill
 - **What was implemented:** Redesigned Ministry onboarding registration (`MinistrySignupPage.tsx` and route `/register`) into an official Government Ministry registration form matching the reference specification. Added tab switcher (Log in / Register), a prominent "Fill in Demo Data" button with instant feedback, fields for officer entity name, Government Department ID, official email, date of birth, education qualifications, password with visibility toggle, department focus & mandate, and a Government ID proof upload attachment box. Updated header Register action on `LandingPage.tsx` to link to `/register`.
 - **Files touched:** `apps/web/src/pages/MinistrySignupPage.tsx`, `apps/web/src/pages/LandingPage.tsx`, `apps/web/src/App.tsx`, `AGENTS.md`.
