@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-10-05] — feature/rag-chatbot — Fix legacy JWT stub lint errors
+- **What was implemented:** Marked unused JWT stub parameters as intentionally unused to restore API lint on this branch.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Maintenance fix on the RAG branch.
+- **Anything the next session/teammate needs to know:** Preserve the completed JWT implementation from `main` when integrating this branch; its old stubs predate the backend merge.
+
 ### [2026-09-22] — main — README rewrite: branch-mapped ownership, multi-provider LLM docs
 - **What was implemented:** Rewrote `README.md` end to end to reflect the
   repo's actual current state: added an "Architecture at a glance" table
