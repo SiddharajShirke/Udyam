@@ -9,63 +9,39 @@ know or care which path a given startup used.
 """
 
 import asyncio
-import ipaddress
-import socket
-from urllib.parse import urlparse
 
+import aiohttp
 import httpx
 
 from sandbox import e2b_runner
-
-# Deliberately no allowlist of "approved" platforms — the point is
-# supporting Hugging Face, Render, Vercel, AWS, GCP, and Azure alike, so the
-# correct approach is blocking dangerous internal targets, not trying to
-# enumerate every legitimate external host.
-BLOCKED_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "169.254.169.254", "::1"}
+from sandbox.http_client import get_status_code
+from sandbox.url_security import ValidatedExternalUrl, validate_external_url
 
 
-def validate_external_url(url: str) -> str:
-    """SSRF-safe URL validation — checks the RESOLVED IP, not just the
-    hostname string, to catch DNS rebinding (a domain that looks external
-    but resolves to a private/internal address)."""
-    parsed = urlparse(url)
-    if parsed.scheme != "https":
-        raise ValueError("Only HTTPS URLs are accepted")
-    if not parsed.hostname:
-        raise ValueError("Invalid URL — no hostname")
-
-    hostname = parsed.hostname.lower()
-    if hostname in BLOCKED_HOSTS:
-        raise ValueError("URL points to a blocked internal address")
-
-    try:
-        resolved_ip = socket.gethostbyname(hostname)
-    except socket.gaierror as exc:
-        raise ValueError("Could not resolve hostname") from exc
-
-    ip_obj = ipaddress.ip_address(resolved_ip)
-    if ip_obj.is_private or ip_obj.is_loopback or ip_obj.is_link_local or ip_obj.is_reserved:
-        raise ValueError("URL resolves to a private/internal address — rejected")
-
-    return url
-
-
-async def warm_up(url: str, max_attempts: int = 3, base_delay: int = 5) -> bool:
+async def warm_up(
+    url: str | ValidatedExternalUrl,
+    max_attempts: int = 3,
+    base_delay: int = 5,
+) -> bool:
     """Handles cold starts on free-tier hosts (Hugging Face Spaces, Render).
 
     Never counted toward KPI scoring — only confirms the endpoint is awake
     before run_kpi_team() runs the actual, scored checks.
     """
-    async with httpx.AsyncClient() as client:
-        for attempt in range(max_attempts):
-            try:
-                response = await client.get(url, timeout=45)
-                if response.status_code < 500:
-                    return True
-            except (httpx.TimeoutException, httpx.ConnectError):
-                pass
-            if attempt < max_attempts - 1:
-                await asyncio.sleep(base_delay * (attempt + 1))  # 5s, 10s, 15s
+    for attempt in range(max_attempts):
+        try:
+            status_code = await get_status_code(url, timeout=45)
+            if status_code < 500:
+                return True
+        except (
+            aiohttp.ClientError,
+            asyncio.TimeoutError,
+            httpx.TimeoutException,
+            httpx.ConnectError,
+        ):
+            pass
+        if attempt < max_attempts - 1:
+            await asyncio.sleep(base_delay * (attempt + 1))  # 5s, 10s, 15s
     return False
 
 

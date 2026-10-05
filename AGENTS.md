@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-10-05] — feature/siddharaj-ai-sandbox — Integrate AI sandbox pipeline with main and close PR gaps
+- **What was implemented:** Merged current `main` into the AI branch while preserving main's JWT/RBAC and CI work. Added typed Node-to-AI pipeline client wrappers, additive `SandboxResult` submission-source fields and a Prisma migration, and pinned DNS resolution for external URL checks so requests cannot be redirected or rebound to private addresses. Added SSRF regression tests.
+- **Files touched:** `AGENTS.md`, `.github/workflows/ci.yml`, `.github/CODEOWNERS`, `apps/api/src/auth/jwt.ts`, `apps/api/src/middleware/requireAuth.ts`, `apps/api/src/services/ai-client.ts`, `apps/api/tsconfig.json`, `apps/ai-engine/requirements.txt`, `apps/ai-engine/sandbox/{e2b_runner.py,http_client.py,submission.py,url_security.py}`, `apps/ai-engine/tests/test_ssrf.py`, `database/prisma/schema.prisma`, `database/prisma/migrations/migration_lock.toml`, `database/prisma/migrations/20261005190000_add_sandbox_result_submission_fields/migration.sql`, `docs/api.yaml`, `pnpm-lock.yaml`.
+- **api.yaml changed?** yes — documented `SandboxResult` submission source/URL and KPI threshold shape; retained the AI pipeline endpoints.
+- **schema.prisma changed?** yes — added `SandboxResult.submission_type` (default `e2b`) and nullable `external_url`; included a PostgreSQL migration.
+- **New feature or continuing planned work:** Continuation/integration of the existing AI sandbox pipeline PR.
+- **Anything the next session/teammate needs to know:** The migration is committed but has not been applied to a live Supabase database. PR #7 still needs the required independent/codeowner review; do not merge it from this session.
+
 ### [2026-10-05] — feature/siddharaj-ai-sandbox — Fix legacy JWT stub lint errors
 - **What was implemented:** Marked the two unused JWT stub parameters as intentionally unused so API lint passes on this branch.
 - **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.

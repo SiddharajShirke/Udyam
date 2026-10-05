@@ -16,10 +16,13 @@ import asyncio
 import time
 from typing import Any
 
+import aiohttp
 import httpx
 from e2b_code_interpreter import Sandbox
 
 from lib.retry import call_with_retry
+from sandbox.http_client import get_status_code
+from sandbox.url_security import ValidatedExternalUrl
 
 SANDBOX_TIMEOUT_SECONDS = 180
 DEFAULT_PORT = 8080
@@ -84,7 +87,9 @@ async def run_submission(
 # ---- Section 6.2 — KPI team: three angles on the one open endpoint ----
 
 
-async def run_kpi_team(endpoint_url: str, kpis: list[dict]) -> dict:
+async def run_kpi_team(
+    endpoint_url: str | ValidatedExternalUrl, kpis: list[dict]
+) -> dict:
     scores: dict[str, Any] = {}
     scores.update(await performance_check(endpoint_url))
     scores.update(await correctness_check(endpoint_url, kpis))
@@ -92,42 +97,64 @@ async def run_kpi_team(endpoint_url: str, kpis: list[dict]) -> dict:
     return scores
 
 
-async def performance_check(endpoint_url: str, timeout: float = 10.0) -> dict:
-    async with httpx.AsyncClient() as client:
-        start = time.monotonic()
-        try:
-            response = await client.get(endpoint_url, timeout=timeout)
-            elapsed_ms = (time.monotonic() - start) * 1000
-            return {
-                "performance_response_time_ms": round(elapsed_ms, 1),
-                "performance_ok": response.status_code < 500,
-            }
-        except (httpx.TimeoutException, httpx.ConnectError):
-            return {"performance_response_time_ms": None, "performance_ok": False}
-
-
-async def correctness_check(endpoint_url: str, kpis: list[dict], timeout: float = 10.0) -> dict:
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(endpoint_url, timeout=timeout)
-        except (httpx.TimeoutException, httpx.ConnectError):
-            return {"correctness_ok": False, "correctness_status_code": None}
+async def performance_check(
+    endpoint_url: str | ValidatedExternalUrl, timeout: float = 10.0
+) -> dict:
+    start = time.monotonic()
+    try:
+        status_code = await get_status_code(endpoint_url, timeout=timeout)
+        elapsed_ms = (time.monotonic() - start) * 1000
         return {
-            "correctness_ok": response.status_code == 200,
-            "correctness_status_code": response.status_code,
+            "performance_response_time_ms": round(elapsed_ms, 1),
+            "performance_ok": status_code < 500,
         }
+    except (
+        aiohttp.ClientError,
+        asyncio.TimeoutError,
+        httpx.TimeoutException,
+        httpx.ConnectError,
+    ):
+        return {"performance_response_time_ms": None, "performance_ok": False}
 
 
-async def reliability_check(endpoint_url: str, attempts: int = 5, timeout: float = 10.0) -> dict:
+async def correctness_check(
+    endpoint_url: str | ValidatedExternalUrl,
+    kpis: list[dict],
+    timeout: float = 10.0,
+) -> dict:
+    try:
+        status_code = await get_status_code(endpoint_url, timeout=timeout)
+    except (
+        aiohttp.ClientError,
+        asyncio.TimeoutError,
+        httpx.TimeoutException,
+        httpx.ConnectError,
+    ):
+        return {"correctness_ok": False, "correctness_status_code": None}
+    return {
+        "correctness_ok": status_code == 200,
+        "correctness_status_code": status_code,
+    }
+
+
+async def reliability_check(
+    endpoint_url: str | ValidatedExternalUrl,
+    attempts: int = 5,
+    timeout: float = 10.0,
+) -> dict:
     successes = 0
-    async with httpx.AsyncClient() as client:
-        for _ in range(attempts):
-            try:
-                response = await client.get(endpoint_url, timeout=timeout)
-                if response.status_code < 500:
-                    successes += 1
-            except (httpx.TimeoutException, httpx.ConnectError):
-                pass
+    for _ in range(attempts):
+        try:
+            status_code = await get_status_code(endpoint_url, timeout=timeout)
+            if status_code < 500:
+                successes += 1
+        except (
+            aiohttp.ClientError,
+            asyncio.TimeoutError,
+            httpx.TimeoutException,
+            httpx.ConnectError,
+        ):
+            pass
     return {
         "reliability_success_rate": round(successes / attempts, 2),
         "reliability_error_rate": round(1 - (successes / attempts), 2),
