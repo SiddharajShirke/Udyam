@@ -99,6 +99,15 @@ Every work session ends by appending a new entry here, in this exact format:
 - **Anything the next session/teammate needs to know:** ...
 
 ---
+### [2026-10-05] — feature/simran-frontend-startup — Fix legacy JWT stub lint errors
+- **What was implemented:** Marked unused JWT stub parameters as intentionally unused to restore API lint on this branch.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Maintenance fix on the startup frontend branch.
+- **Anything the next session/teammate needs to know:** Preserve the completed JWT implementation from `main` when integrating this branch; its old stubs are inherited from before the backend merge.
+
+---
 ### [2026-09-26] — feature/simran-frontend-startup — Improve Sandbox, Schemes, and Milestones text readability
 - **What was implemented:** Increased supporting text and control font sizes slightly within the Sandbox, Schemes, and Milestones pages, including the sandbox report and milestone timeline details.
 - **Files touched:** `apps/web/src/styles.css`, `AGENTS.md`.
