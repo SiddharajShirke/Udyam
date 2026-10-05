@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-10-05] — feature/abhay-ai-support — Resolve duplicate JWT merge code
+- **What was implemented:** Removed the old JWT stub functions that were accidentally retained during the merge from `main`, preserving the complete JWT implementation.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Maintenance fix for the AI support branch.
+- **Anything the next session/teammate needs to know:** The duplicate stubs caused API lint to fail with a parse error at line 42; the real JWT implementation remains unchanged.
+
 ### [2026-09-24] — feature/abhay-ai-support — Fix CI Prisma client generation & add Schemes Matching engine with tests
 - **What was implemented:** Added missing `Generate Prisma client` step to `.github/workflows/ci.yml` before API typechecking to fix the `Module '@prisma/client' has no exported member 'PrismaClient'` CI error. Created `apps/ai-engine/agents/schemes_matching.py` providing deterministic scheme & policy eligibility evaluation with clear explanation of missing requirements (DPIIT, trust score, startup stage, domain tags, GST). Added unit test coverage in `test_support_agents.py` (5 unit tests passing).
 - **Files touched:** `.github/workflows/ci.yml`, `apps/ai-engine/agents/schemes_matching.py`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
