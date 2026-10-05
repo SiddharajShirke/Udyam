@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-10-05] — feature/siddharaj-ai-sandbox — Fix legacy JWT stub lint errors
+- **What was implemented:** Marked the two unused JWT stub parameters as intentionally unused so API lint passes on this branch.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Maintenance fix on the existing AI branch.
+- **Anything the next session/teammate needs to know:** The branch still has the old JWT stubs; retain the real JWT implementation from `main` when integrating it.
+
 ### [2026-09-22] — feature/siddharaj-ai-sandbox — AI pipeline build: 5 agents, LangGraph, E2B + external-URL submission, fan-out, internal auth
 - **What was implemented:** The full AI Agent Lead scope (Master Prompt —
   AI Agent Lead, Rounds 1 and 2) for `apps/ai-engine`, built as real,
