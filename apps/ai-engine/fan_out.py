@@ -7,7 +7,7 @@ Node calls run_fanout() with { problem_id, formatted_ps, kpis, startups }.
 
 import asyncio
 
-from agents.matchmaking import rank_startups
+from agents.matchmaking import rank_fanout_startups
 from lib.claude_client import ask_claude_text
 from lib.json_utils import extract_json
 from sandbox.submission import test_submission
@@ -44,7 +44,7 @@ async def run_fanout(
     if not startups:
         raise ValueError("run_fanout requires at least one eligible startup")
 
-    ranked_by_match = rank_startups(formatted_ps.get("domain_tags", []), startups)
+    ranked_by_match = rank_fanout_startups(formatted_ps.get("domain_tags", []), startups)
     candidates = ranked_by_match[:FAN_OUT_CAP]
 
     # Run concurrently — 20 sequential sandbox runs would be far too slow

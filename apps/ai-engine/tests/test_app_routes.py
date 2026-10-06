@@ -27,6 +27,11 @@ def test_ai_routes_reject_missing_header():
         "/ai/evaluate",
         "/ai/draft-contract",
         "/ai/fanout",
+        "/ai/matchmaking",
+        "/ai/log-anomaly",
+        "/ai/quick-assist",
+        "/ai/hardware/next-question",
+        "/ai/hardware/score",
     ):
         response = client.post(path, json={})
         assert response.status_code == 401, f"{path} did not 401 without the header"

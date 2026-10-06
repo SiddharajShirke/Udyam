@@ -1,4 +1,4 @@
-from agents.matchmaking import rank_startups, score_startup
+from agents.matchmaking import rank_fanout_startups, score_startup
 
 
 def test_score_startup_full_overlap():
@@ -37,6 +37,6 @@ def test_rank_startups_orders_highest_first():
         {"id": "s2", "domain_tags": ["healthcare", "logistics"]},
         {"id": "s3", "domain_tags": ["healthcare"]},
     ]
-    ranked = rank_startups(["healthcare", "logistics"], startups)
+    ranked = rank_fanout_startups(["healthcare", "logistics"], startups)
     assert [s["id"] for s in ranked] == ["s2", "s3", "s1"]
     assert ranked[0]["match_score"] >= ranked[1]["match_score"] >= ranked[2]["match_score"]

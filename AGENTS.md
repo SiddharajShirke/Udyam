@@ -101,6 +101,14 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-10-06] — feature/siddharaj-ai-sandbox — Integrate Abhay support endpoints without losing sandbox AI
+- **What was implemented:** Merged the latest `main` support-AI work into the sandbox branch. Preserved the existing sandbox fan-out ranking separately from support matchmaking, registered both protected routers, combined their dependencies, and merged all support/pipeline OpenAPI paths and schemas.
+- **Files touched:** `AGENTS.md`, `.github/workflows/ci.yml`, `apps/ai-engine/agents/{claude_helper.py,hardware_eligibility.py,log_anomaly.py,matchmaking.py,quick_assist.py,schemes_matching.py}`, `apps/ai-engine/{database.py,dependencies.py,fan_out.py,main.py,requirements.txt}`, `apps/ai-engine/routers/{__init__.py,support.py}`, `apps/ai-engine/tests/{test_app_routes.py,test_matchmaking.py,test_support_agents.py}`, `docs/api.yaml`.
+- **api.yaml changed?** yes — retained the five sandbox pipeline routes and added support matchmaking, login anomaly, quick assist, and hardware eligibility routes with their request/response schemas using the shared internal-secret scheme.
+- **schema.prisma changed?** no — the merge uses the existing Prisma-owned tables through the support read-only database layer.
+- **New feature or continuing planned work:** Integration of parallel AI workstreams on the existing sandbox PR.
+- **Anything the next session/teammate needs to know:** Verify CI and review schema/table assumptions for the support database reader; neither feature branch has been merged into `main` by this session.
+
 ### [2026-10-05] — feature/siddharaj-ai-sandbox — Integrate AI sandbox pipeline with main and close PR gaps
 - **What was implemented:** Merged current `main` into the AI branch while preserving main's JWT/RBAC and CI work. Added typed Node-to-AI pipeline client wrappers, additive `SandboxResult` submission-source fields and a Prisma migration, and pinned DNS resolution for external URL checks so requests cannot be redirected or rebound to private addresses. Added SSRF regression tests.
 - **Files touched:** `AGENTS.md`, `.github/workflows/ci.yml`, `.github/CODEOWNERS`, `apps/api/src/auth/jwt.ts`, `apps/api/src/middleware/requireAuth.ts`, `apps/api/src/services/ai-client.ts`, `apps/api/tsconfig.json`, `apps/ai-engine/requirements.txt`, `apps/ai-engine/sandbox/{e2b_runner.py,http_client.py,submission.py,url_security.py}`, `apps/ai-engine/tests/test_ssrf.py`, `database/prisma/schema.prisma`, `database/prisma/migrations/migration_lock.toml`, `database/prisma/migrations/20261005190000_add_sandbox_result_submission_fields/migration.sql`, `docs/api.yaml`, `pnpm-lock.yaml`.
@@ -116,6 +124,38 @@ Every work session ends by appending a new entry here, in this exact format:
 - **schema.prisma changed?** no.
 - **New feature or continuing planned work:** Maintenance fix on the existing AI branch.
 - **Anything the next session/teammate needs to know:** The branch still has the old JWT stubs; retain the real JWT implementation from `main` when integrating it.
+
+### [2026-10-05] — feature/abhay-ai-support — Resolve duplicate JWT merge code
+- **What was implemented:** Removed the duplicate JWT stubs retained during Abhay's merge from `main`, preserving the complete JWT implementation.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Maintenance fix for the AI support branch.
+- **Anything the next session/teammate needs to know:** The duplicate stubs caused API lint to fail with a parse error; the real JWT implementation remains unchanged.
+
+### [2026-09-24] — feature/abhay-ai-support — Add schemes matching engine and fix CI Prisma generation
+- **What was implemented:** Added the missing Prisma client generation step to CI and deterministic scheme/policy eligibility evaluation with tests.
+- **Files touched:** `.github/workflows/ci.yml`, `apps/ai-engine/agents/schemes_matching.py`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Continuing support-AI work.
+- **Anything the next session/teammate needs to know:** There is no `Scheme` model/table or `eligibility_criteria` field in Prisma, so the matching engine is deterministic logic only and no Scheme database query was added.
+
+### [2026-09-23] — feature/abhay-ai-support — Fix API JWT placeholder lint errors
+- **What was implemented:** Marked unused parameters in the temporary JWT stubs so ESLint accepts them; authentication behavior was not changed.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Maintenance fix for the AI support branch.
+- **Anything the next session/teammate needs to know:** The JWT stubs were temporary; the real implementation is provided by the merged Node API work.
+
+### [2026-09-22] — feature/abhay-ai-support — Add protected AI support endpoints and read-only database access
+- **What was implemented:** Added support agents/endpoints, a fail-closed internal-secret dependency, and a pooled async read-only gateway for existing Prisma-owned Problem, Startup, and AuditLog tables.
+- **Files touched:** `docs/api.yaml`, `apps/ai-engine/agents/{claude_helper.py,hardware_eligibility.py,log_anomaly.py,matchmaking.py,quick_assist.py}`, `apps/ai-engine/{database.py,dependencies.py,main.py,requirements.txt,routers/support.py}`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
+- **api.yaml changed?** yes — added the internal support endpoints and their request/response schemas.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Support-AI feature work.
+- **Anything the next session/teammate needs to know:** The support read layer only uses existing Prisma tables. Schemes and Policy Matching has no database endpoint because the Prisma schema has no Scheme model. Internal endpoints require the shared `X-Internal-Secret` value.
 
 ### [2026-09-22] — feature/siddharaj-ai-sandbox — AI pipeline build: 5 agents, LangGraph, E2B + external-URL submission, fan-out, internal auth
 - **What was implemented:** The full AI Agent Lead scope (Master Prompt —

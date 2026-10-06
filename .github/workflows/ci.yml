@@ -32,6 +32,9 @@ jobs:
       - name: Typecheck web
         run: pnpm --filter web exec tsc --noEmit
 
+      - name: Generate Prisma client
+        run: pnpm --filter api exec prisma generate --schema=../../database/prisma/schema.prisma
+
       - name: Lint api
         run: pnpm --filter api lint
 

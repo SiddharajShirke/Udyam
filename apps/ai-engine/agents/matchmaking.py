@@ -18,11 +18,36 @@ def score_startup(problem_domain_tags: list[str], startup_domain_tags: list[str]
 
 
 def rank_startups(problem_domain_tags: list[str], startups: list[dict]) -> list[dict]:
-    """startups: [{"id": ..., "domain_tags": [...]}, ...]
+    """Return explainable support-API matches weighted by overlap and trust."""
+    problem_tags = {tag.strip().lower() for tag in problem_domain_tags if tag.strip()}
+    if not problem_tags:
+        return []
 
-    Returns the same dicts with a `match_score` field added, sorted
-    highest-score first.
-    """
+    matches = []
+    for startup in startups:
+        startup_tags = {
+            tag.strip().lower()
+            for tag in (startup.get("domain_tags") or [])
+            if tag.strip()
+        }
+        overlap = sorted(problem_tags & startup_tags)
+        if not overlap:
+            continue
+
+        trust_score = max(0, min(100, int(startup.get("trust_score") or 0)))
+        overlap_score = len(overlap) / len(problem_tags)
+        matches.append(
+            {
+                "startup_id": str(startup["id"]),
+                "match_score": round(overlap_score * 70 + trust_score * 0.3, 2),
+                "reason": f"Matches domain tags: {', '.join(overlap)}; trust score contributes to ranking.",
+            }
+        )
+    return sorted(matches, key=lambda match: match["match_score"], reverse=True)
+
+
+def rank_fanout_startups(problem_domain_tags: list[str], startups: list[dict]) -> list[dict]:
+    """Preserve candidate data while ranking the sandbox pipeline's shortlist."""
     scored = [
         {**s, "match_score": score_startup(problem_domain_tags, s.get("domain_tags", []))}
         for s in startups
