@@ -1,0 +1,31 @@
+GOVERNMENT PROCUREMENT CONTRACT
+================================
+
+Reference: {{ problem.get('title', 'Untitled Problem') }}
+
+1. PARTIES
+   Procuring Authority (Ministry ID): {{ problem.get('ministry_id', 'N/A') }}
+   Contractor (Startup): {{ winner.get('name', winner.get('id', 'N/A')) }}
+
+2. SCOPE OF WORK
+   {{ outcome_description }}
+
+3. MILESTONES AND PAYMENT SCHEDULE
+{% for m in milestones %}
+   {{ loop.index }}. {{ m.title }}
+      KPI Threshold: {{ m.kpi_threshold }}
+      Payment: INR {{ m.amount_lakhs }} lakhs
+{% endfor %}
+
+4. TERM
+   This contract is governed by the General Financial Rules (GFR)
+   applicable to government procurement of innovative solutions under
+   SIH 2026 / Problem Statement 26136.
+
+5. INTELLECTUAL PROPERTY
+   See Annexure A (IP Clause) accompanying this contract.
+
+---
+Drafted by the InnovateProcure AI Contract Drafter agent. Subject to
+Ministry review and sign-off before execution — this is a draft, not an
+executed contract.

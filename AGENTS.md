@@ -101,38 +101,189 @@ Every work session ends by appending a new entry here, in this exact format:
 ---
 (entries begin below this line — do not delete this instruction block, only append above it)
 
+### [2026-10-06] — feature/siddharaj-ai-sandbox — Integrate Abhay support endpoints without losing sandbox AI
+- **What was implemented:** Merged the latest `main` support-AI work into the sandbox branch. Preserved the existing sandbox fan-out ranking separately from support matchmaking, registered both protected routers, combined their dependencies, and merged all support/pipeline OpenAPI paths and schemas.
+- **Files touched:** `AGENTS.md`, `.github/workflows/ci.yml`, `apps/ai-engine/agents/{claude_helper.py,hardware_eligibility.py,log_anomaly.py,matchmaking.py,quick_assist.py,schemes_matching.py}`, `apps/ai-engine/{database.py,dependencies.py,fan_out.py,main.py,requirements.txt}`, `apps/ai-engine/routers/{__init__.py,support.py}`, `apps/ai-engine/tests/{test_app_routes.py,test_matchmaking.py,test_support_agents.py}`, `docs/api.yaml`.
+- **api.yaml changed?** yes — retained the five sandbox pipeline routes and added support matchmaking, login anomaly, quick assist, and hardware eligibility routes with their request/response schemas using the shared internal-secret scheme.
+- **schema.prisma changed?** no — the merge uses the existing Prisma-owned tables through the support read-only database layer.
+- **New feature or continuing planned work:** Integration of parallel AI workstreams on the existing sandbox PR.
+- **Anything the next session/teammate needs to know:** Verify CI and review schema/table assumptions for the support database reader; neither feature branch has been merged into `main` by this session.
+
+### [2026-10-05] — feature/siddharaj-ai-sandbox — Integrate AI sandbox pipeline with main and close PR gaps
+- **What was implemented:** Merged current `main` into the AI branch while preserving main's JWT/RBAC and CI work. Added typed Node-to-AI pipeline client wrappers, additive `SandboxResult` submission-source fields and a Prisma migration, and pinned DNS resolution for external URL checks so requests cannot be redirected or rebound to private addresses. Added SSRF regression tests.
+- **Files touched:** `AGENTS.md`, `.github/workflows/ci.yml`, `.github/CODEOWNERS`, `apps/api/src/auth/jwt.ts`, `apps/api/src/middleware/requireAuth.ts`, `apps/api/src/services/ai-client.ts`, `apps/api/tsconfig.json`, `apps/ai-engine/requirements.txt`, `apps/ai-engine/sandbox/{e2b_runner.py,http_client.py,submission.py,url_security.py}`, `apps/ai-engine/tests/test_ssrf.py`, `database/prisma/schema.prisma`, `database/prisma/migrations/migration_lock.toml`, `database/prisma/migrations/20261005190000_add_sandbox_result_submission_fields/migration.sql`, `docs/api.yaml`, `pnpm-lock.yaml`.
+- **api.yaml changed?** yes — documented `SandboxResult` submission source/URL and KPI threshold shape; retained the AI pipeline endpoints.
+- **schema.prisma changed?** yes — added `SandboxResult.submission_type` (default `e2b`) and nullable `external_url`; included a PostgreSQL migration.
+- **New feature or continuing planned work:** Continuation/integration of the existing AI sandbox pipeline PR.
+- **Anything the next session/teammate needs to know:** The migration is committed but has not been applied to a live Supabase database. PR #7 still needs the required independent/codeowner review; do not merge it from this session.
+
+### [2026-10-05] — feature/siddharaj-ai-sandbox — Fix legacy JWT stub lint errors
+- **What was implemented:** Marked the two unused JWT stub parameters as intentionally unused so API lint passes on this branch.
+- **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
+- **api.yaml changed?** no.
+- **schema.prisma changed?** no.
+- **New feature or continuing planned work:** Maintenance fix on the existing AI branch.
+- **Anything the next session/teammate needs to know:** The branch still has the old JWT stubs; retain the real JWT implementation from `main` when integrating it.
+
 ### [2026-10-05] — feature/abhay-ai-support — Resolve duplicate JWT merge code
-- **What was implemented:** Removed the old JWT stub functions that were accidentally retained during the merge from `main`, preserving the complete JWT implementation.
+- **What was implemented:** Removed the duplicate JWT stubs retained during Abhay's merge from `main`, preserving the complete JWT implementation.
 - **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
 - **api.yaml changed?** no.
 - **schema.prisma changed?** no.
 - **New feature or continuing planned work:** Maintenance fix for the AI support branch.
-- **Anything the next session/teammate needs to know:** The duplicate stubs caused API lint to fail with a parse error at line 42; the real JWT implementation remains unchanged.
+- **Anything the next session/teammate needs to know:** The duplicate stubs caused API lint to fail with a parse error; the real JWT implementation remains unchanged.
 
-### [2026-09-24] — feature/abhay-ai-support — Fix CI Prisma client generation & add Schemes Matching engine with tests
-- **What was implemented:** Added missing `Generate Prisma client` step to `.github/workflows/ci.yml` before API typechecking to fix the `Module '@prisma/client' has no exported member 'PrismaClient'` CI error. Created `apps/ai-engine/agents/schemes_matching.py` providing deterministic scheme & policy eligibility evaluation with clear explanation of missing requirements (DPIIT, trust score, startup stage, domain tags, GST). Added unit test coverage in `test_support_agents.py` (5 unit tests passing).
+### [2026-09-24] — feature/abhay-ai-support — Add schemes matching engine and fix CI Prisma generation
+- **What was implemented:** Added the missing Prisma client generation step to CI and deterministic scheme/policy eligibility evaluation with tests.
 - **Files touched:** `.github/workflows/ci.yml`, `apps/ai-engine/agents/schemes_matching.py`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
 - **api.yaml changed?** no.
 - **schema.prisma changed?** no.
-- **New feature or continuing planned work:** Path A — continuing planned work (CI unblock + Round 2 Schemes matching engine).
-- **Anything the next session/teammate needs to know:** CI now generates the Prisma client prior to TypeScript checking `apps/api`. All 5 AI engine support unit tests pass (`python -m unittest discover -s tests -v`).
-
+- **New feature or continuing planned work:** Continuing support-AI work.
+- **Anything the next session/teammate needs to know:** There is no `Scheme` model/table or `eligibility_criteria` field in Prisma, so the matching engine is deterministic logic only and no Scheme database query was added.
 
 ### [2026-09-23] — feature/abhay-ai-support — Fix API JWT placeholder lint errors
-- **What was implemented:** Marked the existing unimplemented JWT stub parameters as intentionally unused with `void` expressions so ESLint's `no-unused-vars` rule accepts them. The stubs still throw `Error("Not implemented")`; no signing, verification, authentication, API, or security behavior changed.
+- **What was implemented:** Marked unused parameters in the temporary JWT stubs so ESLint accepts them; authentication behavior was not changed.
 - **Files touched:** `apps/api/src/auth/jwt.ts`, `AGENTS.md`.
 - **api.yaml changed?** no.
 - **schema.prisma changed?** no.
-- **New feature or continuing planned work:** Continuing planned work — minimal CI lint unblock.
-- **Anything the next session/teammate needs to know:** This is a temporary lint-only adjustment to Teammate C's JWT placeholders. The actual JWT signing and verification implementation remains outstanding.
+- **New feature or continuing planned work:** Maintenance fix for the AI support branch.
+- **Anything the next session/teammate needs to know:** The JWT stubs were temporary; the real implementation is provided by the merged Node API work.
 
-### [2026-09-22] — feature/abhay-ai-support — AI support endpoints, pooled read layer, deterministic agents
-- **What was implemented:** Added authenticated internal `/ai/*` support endpoints for deterministic problem/startup matchmaking, login anomaly detection, stateless role-aware quick assist, and adaptive hardware eligibility questions/scoring. Added a shared fail-closed `verify_internal_secret` FastAPI dependency that checks `X-Internal-Secret`; an async SQLAlchemy read-model gateway with Supabase-friendly pool limits (5 connections + 2 overflow) that only reads Prisma-owned `Problem`, `Startup`, and `AuditLog` tables; a one-retry Claude helper for anomaly explanation/quick assist; and unit coverage for the deterministic agents. The matching algorithm returns only approved startups with actual domain overlap, weighted 70% by overlap and 30% by trust score. No Python migrations or schema writes were added.
-- **Files touched:** `docs/api.yaml`, `apps/ai-engine/main.py`, `apps/ai-engine/requirements.txt`, `apps/ai-engine/dependencies.py`, `apps/ai-engine/database.py`, `apps/ai-engine/routers/__init__.py`, `apps/ai-engine/routers/support.py`, `apps/ai-engine/agents/{claude_helper.py,matchmaking.py,log_anomaly.py,hardware_eligibility.py,quick_assist.py}`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
-- **api.yaml changed?** yes — additive `/ai/matchmaking`, `/ai/log-anomaly`, `/ai/quick-assist`, `/ai/hardware/next-question`, and `/ai/hardware/score` endpoints plus their schemas and `internalSecret` security scheme.
+### [2026-09-22] — feature/abhay-ai-support — Add protected AI support endpoints and read-only database access
+- **What was implemented:** Added support agents/endpoints, a fail-closed internal-secret dependency, and a pooled async read-only gateway for existing Prisma-owned Problem, Startup, and AuditLog tables.
+- **Files touched:** `docs/api.yaml`, `apps/ai-engine/agents/{claude_helper.py,hardware_eligibility.py,log_anomaly.py,matchmaking.py,quick_assist.py}`, `apps/ai-engine/{database.py,dependencies.py,main.py,requirements.txt,routers/support.py}`, `apps/ai-engine/tests/test_support_agents.py`, `AGENTS.md`.
+- **api.yaml changed?** yes — added the internal support endpoints and their request/response schemas.
 - **schema.prisma changed?** no.
-- **New feature or continuing planned work:** Path A — starting the previously assigned AI matchmaking/support workstream.
-- **Anything the next session/teammate needs to know:** The requested Schemes & Policy Matching Engine is deliberately not implemented because the current Prisma schema has no `Scheme` model/table or `eligibility_criteria` field; Node must add that schema through a Prisma migration before Python can query it. Deterministic unit tests pass (`python -m unittest discover -s tests -v`). A fresh local `.venv` install encountered a Windows file lock while installing dependencies, so endpoint-level TestClient verification remains to be rerun after the lock is cleared. `INTERNAL_SECRET` must match the Node service's header value exactly; the implementation fails closed when it is absent.
+- **New feature or continuing planned work:** Support-AI feature work.
+- **Anything the next session/teammate needs to know:** The support read layer only uses existing Prisma tables. Schemes and Policy Matching has no database endpoint because the Prisma schema has no Scheme model. Internal endpoints require the shared `X-Internal-Secret` value.
+
+### [2026-09-22] — feature/siddharaj-ai-sandbox — AI pipeline build: 5 agents, LangGraph, E2B + external-URL submission, fan-out, internal auth
+- **What was implemented:** The full AI Agent Lead scope (Master Prompt —
+  AI Agent Lead, Rounds 1 and 2) for `apps/ai-engine`, built as real,
+  working code (not stubs):
+  - **Section 2.1–2.5, five agents**, each calling Claude and validating
+    its own output rather than trusting it blindly: `agents/problem_formatter.py`
+    (JSON-fence stripping + one strict-JSON retry), `agents/kpi_generator.py`
+    (weight-sum-to-1.0 validated in code, one retry with a stricter prompt
+    if it fails), `agents/matchmaking.py` (real Jaccard domain-tag
+    similarity scoring — not a placeholder — used by the fan-out to pick
+    eligible candidates), `agents/evaluation.py` (Section 6.3's structured
+    5-section report — `executive_summary`, `per_kpi_breakdown`,
+    `comparison_table`, `recommendation`, `caveats` — supersedes 2.4's flat
+    shape), `agents/contract_drafter.py` (Claude fills variable content,
+    `templates/contract.jinja2` holds the fixed GFR-style structure).
+  - **Section 2.6, LangGraph orchestration:** `graph.py` — a compiled
+    `StateGraph` wiring `format_problem → generate_kpis → (external
+    sandbox step) → evaluate → draft_contract → END`, exactly matching the
+    prompt's pseudocode, with the sandbox step deliberately outside the
+    graph's automatic edges (Node resumes at `evaluate` once
+    `sandbox_scores` exist).
+  - **Section 2.3 + 6.2, E2B sandbox driver:** `sandbox/e2b_runner.py` —
+    `Sandbox.create(timeout=180)`, provision + start in the background,
+    `try/finally: sandbox.kill()` as the planned-destruction safety net
+    (with the 180s timeout as the second, independent one), and the KPI
+    "team" (`performance_check` / `correctness_check` / `reliability_check`)
+    all hitting the same single exposed endpoint.
+  - **Section 6.1, autonomous fan-out:** `fan_out.py` — `asyncio.gather`
+    over the top-6-by-matchmaking-score eligible startups (documented,
+    deliberate cap — E2B free tier caps concurrent sandboxes at 20
+    platform-wide), each isolated in its own try/except so one failure
+    never blocks the batch, then a single Claude call ranks everyone
+    together with per-startup comparative feedback.
+  - **Section 9, unified external-URL submission path:**
+    `sandbox/submission.py` — `test_submission(submission_type, target,
+    kpis)` is the single entry point for both the E2B path and a live-URL
+    path (Hugging Face Spaces / Render / Vercel / AWS / GCP / Azure /
+    anywhere), returning the identical `{status, scores, error}` shape
+    either way. `validate_external_url` is SSRF-safe: HTTPS-only,
+    hostname blocklist, **and** resolves DNS and checks the actual
+    resolved IP (catches DNS rebinding), with deliberately no allowlist of
+    "approved" platforms. `warm_up` does a 3-attempt/5-10-15s backoff for
+    free-tier cold starts, never counted toward scoring.
+  - **Section 8, shared retry wrapper:** `lib/retry.py`'s
+    `call_with_retry`, used by `lib/claude_client.py` around every Claude
+    call and by `sandbox/e2b_runner.py` around sandbox creation — NOT
+    wrapped around the KPI test calls themselves (retrying a live test
+    would change what's being measured).
+  - **Section 2.7, internal service auth:** `lib/internal_auth.py`'s
+    `require_internal_secret` FastAPI dependency, applied to the whole
+    `/ai/*` router (`routes/ai.py`) via `APIRouter(dependencies=[...])` —
+    every route 401s before any agent logic runs if
+    `X-Internal-Secret` is missing or wrong.
+  - **`docs/api.yaml`** updated *with* the code (per the
+    `verify-api-contract` skill): added the `ai` tag, an
+    `internalSecretAuth` (apiKey header) security scheme, and five new
+    paths — `/ai/format-problem`, `/ai/generate-kpis`, `/ai/evaluate`,
+    `/ai/draft-contract`, `/ai/fanout` — plus their request/response
+    schemas, matching the agents' actual shapes field-for-field. Purely
+    additive; no existing path or schema was touched.
+  - **Tests:** `apps/ai-engine/tests/` (47 tests, all passing) covering
+    everything verifiable without a live `ANTHROPIC_API_KEY`/`E2B_API_KEY`:
+    the retry wrapper, JSON-fence extraction, KPI weight-sum validation,
+    matchmaking scoring, the SSRF validator (DNS resolution mocked so
+    tests are deterministic — public IP, private IP, loopback, DNS
+    rebinding, unresolvable host), `warm_up`'s backoff (mocked via
+    `respx`), the three KPI-team HTTP checks (mocked via `respx`), the
+    LangGraph graph compiling with all four expected nodes, the contract
+    Jinja2 template rendering, and — via FastAPI's `TestClient` — that
+    `/health` is public and all five `/ai/*` routes 401 without the
+    header (safe to test with no real keys, since the 401 fires from the
+    `Depends()` before any route body/agent code runs).
+  - `.github/workflows/ci.yml`'s `ai-engine` job now also runs
+    `pytest tests/ -q` (installing from the new `requirements-dev.txt`),
+    not just `py_compile`.
+- **Files touched:** `apps/ai-engine/{lib/__init__.py, lib/retry.py,
+  lib/json_utils.py, lib/internal_auth.py, lib/claude_client.py,
+  agents/problem_formatter.py, agents/kpi_generator.py,
+  agents/matchmaking.py, agents/evaluation.py, agents/contract_drafter.py,
+  templates/contract.jinja2, sandbox/e2b_runner.py, sandbox/submission.py,
+  graph.py, fan_out.py, routes/__init__.py, routes/ai.py, main.py,
+  requirements.txt, requirements-dev.txt, pytest.ini, tests/*}`,
+  `docs/api.yaml`, `.github/workflows/ci.yml`, `AGENTS.md`.
+- **api.yaml changed?** yes — five new endpoints added (`/ai/format-problem`,
+  `/ai/generate-kpis`, `/ai/evaluate`, `/ai/draft-contract`, `/ai/fanout`),
+  plus a new `ai` tag and `internalSecretAuth` security scheme. Purely
+  additive.
+- **schema.prisma changed?** no — **but there is a flagged dependency**:
+  Section 9.4 needs two additive, nullable fields on `SandboxResult` —
+  `submission_type: String` (`"e2b" | "external_url"`) and
+  `external_url: String?` — which is **Aniket's migration to run on
+  `feature/aniket-nodejs-backend`, not built here**. `sandbox/submission.py`
+  and `fan_out.py` are already written to expect a `submission_type` /
+  `submission_target` shape per startup so no code changes should be
+  needed on this branch once that migration lands — just flag it to
+  Aniket before this branch's work is relied on end-to-end.
+- **New feature or continuing planned work:** New feature — this is the
+  first implementation of the AI pipeline; `apps/ai-engine` previously
+  had only `# TODO` stubs.
+- **Anything the next session/teammate needs to know:**
+  - **No live `ANTHROPIC_API_KEY` or `E2B_API_KEY` was available in this
+    session.** Everything that can be verified without them was: all
+    files `py_compile` clean, the full FastAPI app boots and
+    `/health` responds `200`, all five `/ai/*` routes are registered
+    (confirmed via `/openapi.json`) and correctly 401 without the
+    internal-secret header, the LangGraph graph compiles with all four
+    nodes, and all 47 pytest tests pass. What is **not** yet verified:
+    an actual Claude call returning valid JSON, an actual E2B sandbox
+    being created/killed, and an actual live external-URL submission
+    being warmed up and tested for real. Whoever picks this up next with
+    real keys should run the pipeline against one seeded real problem
+    end-to-end before trusting it for a demo (see Section 7 of the
+    original prompt).
+  - `sandbox/e2b_runner.py`'s `provision_and_start` follows
+    `e2b-code-interpreter`'s documented v1 interface
+    (`Sandbox.create`, `.files.write`, `.commands.run`, `.get_host`) —
+    flagged in that file's own docstring as needing live verification,
+    since it was written without a real E2B account to test against.
+  - `langgraph==1.2.12` and `requirements-dev.txt` (`pytest`,
+    `pytest-asyncio`, `respx`) are new dependencies — installed and
+    verified in the existing `.venv`.
+  - Fan-out cap of 6 is deliberate (documented in `fan_out.py`'s own
+    comment, not just here) — don't "fix" it upward without re-checking
+    the E2B concurrency budget against whatever else is running on the
+    platform at demo time.
+  - This work is on `feature/siddharaj-ai-sandbox` — **not pushed to
+    `main`** yet; per `AGENTS.md`'s own rule this needs a PR + 1 review.
 
 ### [2026-09-22] — main — README rewrite: branch-mapped ownership, multi-provider LLM docs
 - **What was implemented:** Rewrote `README.md` end to end to reflect the
